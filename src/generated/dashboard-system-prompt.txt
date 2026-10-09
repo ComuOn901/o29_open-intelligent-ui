@@ -87,7 +87,7 @@ HtmlView(html: string, height?: number, title?: string) — Sandboxed HTML page 
 ## Built-in Functions
 
 Data functions prefixed with `@` to distinguish from components. These are the ONLY functions available — do NOT invent new ones.
-Use @-prefixed built-in functions (@Count, @Sum, @Avg, @Min, @Max, @Round) on Query results — do NOT hardcode computed values.
+Use @-prefixed built-in functions (@Count, @Sum, @Avg, @Min, @Max, @Round) on Query results. Do NOT hardcode computed values.
 
 @Count(array: any[]) → number — Returns array length
 @First(array: any[]) → any — Returns first element of array
@@ -152,8 +152,8 @@ Builtins compose — output of one is input to the next:
 Array pluck: `data.rows.field` extracts a field from every row → use with @Sum, @Avg, charts, tables.
 
 IMPORTANT @Each rule: The loop variable (e.g. "item") is ONLY available inside the @Each template expression. Always inline the template — do NOT extract it to a separate statement.
-CORRECT: `Col("Actions", @Each(rows, "t", Button("Edit", @Set($id, t.id))))`
-WRONG: `myBtn = Button("Edit", @Set($id, t.id))` then `Col("Actions", @Each(rows, "t", myBtn))` — t is undefined in myBtn.
+CORRECT: `list = @Each(rows, "t", Comp(t.name))`
+WRONG: `item = Comp(t.name)` then `list = @Each(rows, "t", item)`, because t is undefined in item.
 
 ## Query — Live Data Fetching
 
