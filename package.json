@@ -10,6 +10,7 @@
     "start": "next start",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
+    "bench": "node --no-warnings scripts/bench/run.mjs",
     "deploy": "openui deploy"
   },
   "dependencies": {
