@@ -24,7 +24,10 @@ The model streams OpenUI Lang 1.0, and the app renders it with a library of prim
 - **Media and data:** `Icon` (lucide names), `Image` (searches Wikipedia when there is no `src` or it fails), `Table`, `Chart` (bar, line, area, pie, donut), and `Map` with `MapMarker` ([MapLibre GL](https://maplibre.org), category filter, expansion, a street route).
 - **Drawing:** `Svg` with `G`, `Circle`, `Ellipse`, `Rect`, `Line`, `Path`, `Polyline`, `Polygon` and `SvgText`, whose attributes take expressions so state can move them; `HtmlView` runs an HTML page (a game, a canvas) in a sandboxed iframe.
 
-The dev-only page `/gallery` renders hand-written programs that exercise every component.
+- **Functions:** 43 generic `@functions` (`src/lib/functions/`) next to the 1.0 built-ins, so an answer can compute with its own state: lists (`@Append`, `@Remove`, `@Update`, `@Toggle`, `@Includes`, `@Range`, `@Shuffle`, ...), numbers (`@Pow`, `@Random`, `@Clamp`, `@Percent`), text (`@Format`, `@Join`, `@Plural`), dates (`@FormatDate`, `@AddDays`, `@DaysBetween`) and data for dashboards (`@GroupBy`, `@Pivot`, `@Top`, `@Between`, `@Bucket`, `@Cumulative`, `@MovingAvg`, `@Change`, `@Histogram`, `@Stats`). A bad argument makes a call evaluate to null, as in 1.0.
+- **Actions:** `@CopyToClipboard(text)`, for copying a shopping list or a split.
+
+The dev-only page `/gallery` renders hand-written programs: working tools for six of the Intelligent UI examples (Sunday roast, split the bill, Monty Hall, retirement savings, GDP, the central limit theorem), two dashboards over demo data, the prompt's worked examples, and programs that exercise every component.
 
 ## Setup
 
@@ -63,7 +66,7 @@ We also have an [OpenWebUI plugin](https://github.com/thesysdev/openwebui-plugin
    ollama pull qwen3.8:27b
    ```
 
-2. Give the model a larger context window. The OpenUI prompt for this app is about 3,600 tokens, and Ollama's default window is 4,096, which silently cuts the prompt and produces broken output. Either start Ollama with a larger default:
+2. Give the model a larger context window. The OpenUI prompt for this app is about 6,400 tokens, and Ollama's default window is 4,096, which silently cuts the prompt and produces broken output. Either start Ollama with a larger default:
 
    ```bash
    OLLAMA_CONTEXT_LENGTH=32768 ollama serve
@@ -87,7 +90,8 @@ What changes with a local model:
 
 - **Generation.** `/api/chat` calls OpenUI Gateway's Responses API with `generateSystemPrompt({ cloud: true })`, so Gateway validates and corrects the generated OpenUI Lang against this app's component library. Gateway's hosted `image_search` tool finds current photos the model can pass to `Image`.
 - **Chat Completions.** OpenUI Gateway also supports the Chat Completions API, and OpenUI works with either. This example uses the Responses API because Gateway's hosted tools, such as `image_search`, are available only there. An application already built on Chat Completions can keep that protocol and pair it with `openAIReadableStreamAdapter` or `openAIAdapter` in the browser.
-- **State.** Inputs bind to `$variables` (`Slider($price, 0, 100)`), and any statement that reads them updates as the user interacts. Buttons and `Pressable` run `@Set`, `@Reset`, `@ToAssistant` and `@OpenUrl` steps.
+- **State.** Inputs bind to `$variables` (`Slider($price, 0, 100)`), and any statement that reads them updates as the user interacts. Buttons and `Pressable` run `@Set`, `@Reset`, `@ToAssistant`, `@OpenUrl` and `@CopyToClipboard` steps.
+- **Working tools.** The prompt options in `src/lib/prompt-options.ts` (rules and worked examples) teach the model to answer with a tool that works in the page: lists and inputs live in `$variables`, everything shown is computed from them with `@functions`, and buttons change them with `@Set`, instead of sending a form back to the assistant. `@Each` maps a list into rows, e.g. `@Each(@Range(0, $years + 1), "y", {year: y, balance: $p * @Pow(1 + $r / 100, y)})`.
 - **Photos.** `Image` loads its `src`; without one, or when it fails, it asks `/api/image-search`, which returns Wikipedia lead images and Wikimedia Commons files for the description.
 - **Map data.** Street geometry comes from `/api/street-route`, which validates input and caches results from the public OSRM demo server's driving profile: a road overview, not walking or transit directions. When it's unavailable, a labelled direct connection is drawn instead.
 - **Theme.** Colors, type, radii and spacing are tokens in `src/lib/components/theme.css`, with a dark set under `data-theme="dark"`. The chat shell keeps its `AgentInterface` theme from `src/lib/response-theme.ts`.
@@ -104,13 +108,18 @@ What changes with a local model:
 | `src/app/api/wiki/route.ts` | Wikipedia lookup: photos and coordinates for a place, cached on the server. |
 | `src/app/api/street-route/route.ts` | Street geometry between stops from OSRM, cached on the server. |
 | `src/app/api/image-search/route.ts` | Photo search for `Image`: Wikipedia lead images, then Wikimedia Commons, cached on the server. |
-| `src/app/gallery/` | The dev-only `/gallery` page and its OpenUI Lang programs. |
+| `src/app/gallery/` | The dev-only `/gallery` page and its OpenUI Lang programs; `tool-programs.ts` holds the working tools and dashboards. |
+| `src/app/preview/` | A dev-only page that renders one program handed in by a script, for the benchmark's screenshots. |
 | `src/lib/library.ts` | The OpenUI component library: the primitives, their groups and prompt notes. |
-| `src/lib/prompt-options.ts` | The OpenUI Lang 1.0 prompt flags the library uses. |
+| `src/lib/functions/` | The library's `@functions` (`defineFunction`), with tests that run them through the 1.0 parser and evaluator. |
+| `src/lib/actions.ts` | The `@CopyToClipboard` action and its handler. |
+| `src/lib/demo-data.ts` | Demo data tools (`get_orders`, `get_tickets`, `get_traffic`) for Query-backed dashboards: their specs for the prompt and a function-map tool provider. |
+| `src/lib/prompt-options.ts` | The prompt options: the working-tool rules and examples, and a dashboard variant with the demo data tools. |
 | `src/lib/response-theme.ts` | Theme tokens for the `AgentInterface` shell (colors, fonts, radii, chat bubbles), built with `createTheme()`. |
 | `src/lib/components/` | The components (`defineComponent` + Zod schema each), their styles and tokens, and the map in `map/`. |
 | `src/generated/spec.json` | Library spec sent to Gateway in the system prompt. Regenerate with `npm run generate` after changing a component schema. |
-| `src/generated/system-prompt.txt` | The full system prompt for the library. Regenerate with `npm run prompt`. |
+| `src/generated/system-prompt.txt` | The full system prompt for the library; `dashboard-system-prompt.txt` adds the demo data tools. Regenerate with `npm run prompt`. |
+| `scripts/bench/` | The benchmark: 16 example prompts and 8 dashboard prompts, run against a model and checked; see [Benchmark](#benchmark). |
 | `vendor/openui/` | The OpenUI 1.0 packages, packed from the release branch by `scripts/pack-openui.sh`. |
 | `docs/openui-chatgpt-comparison.mp4` | Side-by-side video of ChatGPT and this project; `docs/openui-chatgpt-comparison.jpg` is its README preview. |
 | `.env.example` | The environment variables to copy into `.env.local`. |
@@ -118,9 +127,25 @@ What changes with a local model:
 ## Checks
 
 ```bash
-npm run generate && npm run prompt   # after changing a component schema
+npm run generate && npm run prompt   # after changing a component schema, a function or the prompt options
+npm test                             # the functions, and every gallery program and prompt example parsed by the 1.0 parser
 npm run typecheck
 npm run build
 ```
 
 Then open `/gallery` (`npm run dev`), switch between light and dark, and try it at phone width. `scripts/gallery-shots.mjs` takes the same screenshots headlessly and checks console errors, overflow and the main interactions.
+
+## Benchmark
+
+`scripts/bench/run.mjs` sends the 16 example prompts (with `system-prompt.txt`) and 8 dashboard prompts (with `dashboard-system-prompt.txt`) to a model on any OpenAI-compatible endpoint, saves each answer, checks it with the 1.0 parser, flags `@names` and components the library does not have, and screenshots each answer in light and dark at 390 and 1280 px through `/preview`. The key is read from an environment variable at run time.
+
+```bash
+npm run dev   # in another terminal, for the screenshots
+PLAYWRIGHT_CORE=/path/to/playwright-core CHROME=/path/to/chrome-headless-shell \
+  OPENROUTER_API_KEY=... npm run bench -- --model <id> --base-url https://openrouter.ai/api/v1 --key-env OPENROUTER_API_KEY
+npm run bench -- --fake                 # the hand-written programs stand in for the model
+npm run bench -- --answers <dir>        # re-check and re-shoot saved <id>.oui answers
+```
+
+Results go to `bench-out/<model>-<time>/`: `answers/`, `shots/`, `report.json` and `report.md`. Other options: `--only id,id`, `--kind tool|dashboard`, `--widths`, `--no-shots`, `--concurrency`, `--temperature`, `--max-tokens`, `--app`.
+
