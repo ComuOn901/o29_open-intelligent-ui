@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "generate": "openui generate src/lib/library.ts --spec --out src/generated/spec.json",
+    "prompt": "openui generate src/lib/library.ts --out src/generated/system-prompt.txt --prompt-options promptOptions && rm -f src/generated/system-prompt.spec.json",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
