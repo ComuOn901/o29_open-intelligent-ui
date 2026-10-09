@@ -8,6 +8,8 @@ import {
   openAIConversationMessageFormat,
   openAIResponsesAdapter,
 } from "@openuidev/react-ui";
+import type { ActionEvent } from "@openuidev/react-lang";
+import { runLibraryAction } from "@/lib/actions";
 import { library } from "@/lib/library";
 import { responseTheme } from "@/lib/response-theme";
 
@@ -24,16 +26,19 @@ const llm = fetchLLM({
   messageFormat: openAIConversationMessageFormat,
 });
 
-// The library's @CopyToClipboard reaches the host as a custom action. This
-// AgentInterface build has no onAction prop and drops custom actions, so copy
-// buttons do nothing in chat yet; once it has one, pass it runLibraryAction
-// from @/lib/actions (the gallery already does).
+// The chat sends @ToAssistant and opens @OpenUrl itself; every other action,
+// such as the library's @CopyToClipboard, reaches onAction.
+function onAction(event: ActionEvent) {
+  void runLibraryAction(event);
+}
+
 export default function Home() {
   return (
     <div className="chat-shell">
       <AgentInterface
         llm={llm}
         componentLibrary={library}
+        onAction={onAction}
         agentName="OpenUI"
         theme={{ mode: "light", lightTheme: responseTheme }}
         starters={starters}
