@@ -34,7 +34,11 @@ const backend = useOllama
   : {
       name: "OpenUI Gateway",
       model: process.env.THESYS_MODEL ?? "openai/gpt-5.5",
-      instructions: generateSystemPrompt({ cloud: true, library: librarySpec }),
+      instructions: generateSystemPrompt({
+        cloud: true,
+        library: librarySpec,
+        promptOptions: { examples: promptOptions.examples, additionalRules: promptOptions.additionalRules },
+      }),
       tools: [{ type: "image_search" } as unknown as Tool],
       connect: () => new OpenAI({ apiKey: process.env.THESYS_API_KEY, baseURL: "https://api.thesys.dev/v1/embed" }),
       missingConfig: process.env.THESYS_API_KEY ? undefined : "THESYS_API_KEY is not set. Add it to .env.local, or set MODEL_PROVIDER=ollama to use a local model.",

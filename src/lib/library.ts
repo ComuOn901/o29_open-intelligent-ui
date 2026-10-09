@@ -63,5 +63,5 @@ export const library = createLibrary({
   ],
 });
 
-// The CLI (npm run prompt) picks up this export by name.
-export { promptOptions } from "./prompt-options";
+// The CLI (npm run prompt) picks up these exports by name.
+export { dashboardPromptOptions, promptOptions } from "./prompt-options";
