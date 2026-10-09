@@ -7,10 +7,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "deploy": "openui deploy",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "deploy": "openui deploy"
   },
   "dependencies": {
+    "@openuidev/lang-core": "file:vendor/openui/openuidev-lang-core-0.3.1.tgz",
     "@openuidev/react-lang": "file:vendor/openui/openuidev-react-lang-0.3.1.tgz",
     "@openuidev/react-ui": "file:vendor/openui/openuidev-react-ui-0.17.0.tgz",
     "lucide-react": "^0.562.0",

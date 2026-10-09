@@ -1,6 +1,6 @@
-import librarySpec from "@/generated/spec.json";
-import { localPromptOptions, promptOptions } from "@/lib/prompt-options";
-import { generateSystemPrompt } from "@openuidev/react-lang";
+import spec from "@/generated/spec.json";
+import { promptOptions } from "@/lib/prompt-options";
+import { generateSystemPrompt, type LibrarySpec } from "@openuidev/lang-core";
 import OpenAI from "openai";
 import type { ReasoningEffort } from "openai/resources/shared";
 import type { ResponseInputItem, Tool } from "openai/resources/responses/responses";
@@ -14,14 +14,19 @@ import type { ResponseInputItem, Tool } from "openai/resources/responses/respons
 // components (image_search is a Gateway extension to the SDK's tool union).
 //
 // Ollama (MODEL_PROVIDER=ollama, or OLLAMA_MODEL set): a local model. The full
-// OpenUI prompt is built here, there is no image search (photos come from
-// Wikipedia), and the output is not corrected, so results depend on the model.
+// OpenUI prompt is built here, there is no image search (the Image component
+// searches Wikipedia itself), and the output is not corrected.
+
+// lang-core types schema.$defs as component schemas only, so the ActionExpression
+// def (an anyOf) in the generated spec needs a cast.
+const librarySpec = spec as unknown as LibrarySpec;
+
 const useOllama = process.env.MODEL_PROVIDER === "ollama" || !!process.env.OLLAMA_MODEL;
 const backend = useOllama
   ? {
       name: "Ollama",
       model: process.env.OLLAMA_MODEL ?? "qwen3.8:27b",
-      instructions: generateSystemPrompt({ library: librarySpec, promptOptions: localPromptOptions }),
+      instructions: generateSystemPrompt({ library: librarySpec, promptOptions }),
       tools: [] as Tool[],
       connect: () => new OpenAI({ apiKey: "ollama", baseURL: process.env.OLLAMA_BASE_URL ?? "http://localhost:11434/v1" }),
       missingConfig: undefined,
@@ -29,7 +34,7 @@ const backend = useOllama
   : {
       name: "OpenUI Gateway",
       model: process.env.THESYS_MODEL ?? "openai/gpt-5.5",
-      instructions: generateSystemPrompt({ cloud: true, library: librarySpec, promptOptions }),
+      instructions: generateSystemPrompt({ cloud: true, library: librarySpec }),
       tools: [{ type: "image_search" } as unknown as Tool],
       connect: () => new OpenAI({ apiKey: process.env.THESYS_API_KEY, baseURL: "https://api.thesys.dev/v1/embed" }),
       missingConfig: process.env.THESYS_API_KEY ? undefined : "THESYS_API_KEY is not set. Add it to .env.local, or set MODEL_PROVIDER=ollama to use a local model.",
@@ -41,20 +46,6 @@ let client: OpenAI | undefined;
 const MAX_ITEMS = 60;
 const MAX_BODY_BYTES = 1_000_000;
 
-// AgentInterface saves component state (the user's map edits) at the end of the
-// answer as "]]>openui:context\n[{...}]". Rewrite it as a sentence the model reads.
-const CONTEXT_MARKER = "]]>openui:context";
-function describeRouteEdits(content: string): string {
-  const at = content.indexOf(CONTEXT_MARKER);
-  if (at < 0) return content;
-  let state: Record<string, { value?: unknown }> = {};
-  try { state = (JSON.parse(content.slice(at + CONTEXT_MARKER.length).trim()) as typeof state[])[0] ?? {}; } catch { return content.slice(0, at); }
-  const removed = Array.isArray(state.routeRemoved?.value) ? state.routeRemoved.value : [];
-  const added = Array.isArray(state.routeAdded?.value) ? state.routeAdded.value.map((stop: { name?: string; id?: string }) => stop?.name || stop?.id).filter(Boolean) : [];
-  const edits = [removed.length && `removed stops (by id): ${removed.join(", ")}`, added.length && `added stops: ${added.join(", ")}`].filter(Boolean);
-  return content.slice(0, at) + (edits.length ? `\n\n(User's edits to this route: ${edits.join("; ")}.)` : "");
-}
-
 // The browser sends the whole conversation each turn. Keep only user and
 // assistant text: earlier tool calls already ran on the backend, and
 // trusted instructions never come from the browser.
@@ -65,7 +56,7 @@ function toInput(messages: unknown): ResponseInputItem[] | null {
     const { role, content } = item as { role?: unknown; content?: unknown };
     if (role !== "user" && role !== "assistant") return [];
     if (typeof content !== "string" && !Array.isArray(content)) return [];
-    return [{ role, content: role === "assistant" && typeof content === "string" ? describeRouteEdits(content) : content } as ResponseInputItem];
+    return [{ role, content } as ResponseInputItem];
   });
   return items.length ? items.slice(-MAX_ITEMS) : null;
 }
