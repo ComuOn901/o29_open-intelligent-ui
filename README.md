@@ -16,15 +16,15 @@ ChatGPT's Intelligent UI (left) and this project (right) answering the same requ
 
 ## What's in the demo
 
-The model streams OpenUI Lang through OpenUI Gateway, and the app renders it as an answer built from custom travel components. They are defined in this repository (`src/lib/travel/components.tsx`) with OpenUI's `defineComponent` and registered alongside OpenUI's built-in chat components:
+The model streams OpenUI Lang 1.0, and the app renders it with a library of primitives the model arranges itself: no layout is fixed in the components. The library (`src/lib/library.ts`, components in `src/lib/components/`) follows the Open Intelligent UI design in light and dark:
 
-- `TravelHeading` and `TravelProse`: editorial headings and paragraphs with streaming word fades.
-- `TravelImage` and `TravelGallery`: a three-photo strip using Gateway image-search results, with Wikipedia fallbacks.
-- `TravelStop` and `TravelItinerary`: destination data and compact photo/text rows, sharing the same stop references with `TravelMap`.
-- `TravelMap`: a [MapLibre GL](https://maplibre.org) street map with emoji pins, category filters, expansion and map-to-itinerary selection. Pins appear while the answer streams; once it ends, the map frames the route and draws its line.
-- `TravelSuggestions`: extra places with "+ Add to my route". Adding one puts a pin on the map and appends it to the itinerary; every stop can also be removed and added back.
+- **Layout:** `Col`, `Row`, `Box` (background, radius, border, sizes, flex), `Grid`, `Card`, `Divider`, `Spacer`.
+- **Text:** `Title`, `Text` (inline **bold**, *italic*, `code`, links), `Caption`, `Label`, `Badge`, `Link`, `List` and `ListItem` (bullets, numbers, a timeline), `Markdown`.
+- **Inputs:** `Button`, `IconButton`, `Pressable`, `Input`, `TextArea`, `Select`, `SegmentedControl`, `Slider`, `Checkbox`, `RadioGroup`, `DatePicker`, `Form`. Each input's first argument is its value, usually a `$variable` other statements read.
+- **Media and data:** `Icon` (lucide names), `Image` (searches Wikipedia when there is no `src` or it fails), `Table`, `Chart` (bar, line, area, pie, donut), and `Map` with `MapMarker` ([MapLibre GL](https://maplibre.org), category filter, expansion, a street route).
+- **Drawing:** `Svg` with `G`, `Circle`, `Ellipse`, `Rect`, `Line`, `Path`, `Polyline`, `Polygon` and `SvgText`, whose attributes take expressions so state can move them; `HtmlView` runs an HTML page (a game, a canvas) in a sandboxed iframe.
 
-The "Customize your route" form at the end of each answer uses OpenUI's built-in form components (`Form`, `RadioGroup`, `CheckBoxGroup`, `Button`) and sends the chosen preferences back to the model with `@ToAssistant`.
+The dev-only page `/gallery` renders hand-written programs that exercise every component.
 
 ## Setup
 
@@ -63,7 +63,7 @@ We also have an [OpenWebUI plugin](https://github.com/thesysdev/openwebui-plugin
    ollama pull qwen3.8:27b
    ```
 
-2. Give the model a larger context window. The OpenUI prompt for this app is about 15,000 tokens, and Ollama's default window is 4,096, which silently cuts the prompt and produces broken output. Either start Ollama with a larger default:
+2. Give the model a larger context window. The OpenUI prompt for this app is about 3,600 tokens, and Ollama's default window is 4,096, which silently cuts the prompt and produces broken output. Either start Ollama with a larger default:
 
    ```bash
    OLLAMA_CONTEXT_LENGTH=32768 ollama serve
@@ -85,12 +85,12 @@ What changes with a local model:
 - **Speed depends on your hardware.** The first request after Ollama loads the model has to read the whole prompt; later requests reuse it and are much faster. For reasoning models, `REASONING_EFFORT=low` cuts the wait considerably. 
 ## How it works
 
-- **Generation.** `/api/chat` calls OpenUI Gateway's Responses API with `generateSystemPrompt({ cloud: true })`, so Gateway validates and corrects the generated OpenUI Lang against this app's component library. Gateway's hosted `image_search` tool finds current photos; the model copies the returned URLs into `TravelImage.src` and `TravelStop.imageUrl`.
+- **Generation.** `/api/chat` calls OpenUI Gateway's Responses API with `generateSystemPrompt({ cloud: true })`, so Gateway validates and corrects the generated OpenUI Lang against this app's component library. Gateway's hosted `image_search` tool finds current photos the model can pass to `Image`.
 - **Chat Completions.** OpenUI Gateway also supports the Chat Completions API, and OpenUI works with either. This example uses the Responses API because Gateway's hosted tools, such as `image_search`, are available only there. An application already built on Chat Completions can keep that protocol and pair it with `openAIReadableStreamAdapter` or `openAIAdapter` in the browser.
-- **Photos.** Each photo falls back to Wikipedia when it has no URL or its image fails to load. A gallery photo with no working image at all is dropped so the others fill the row.
-- **Route edits.** Removed stops, added suggestions and the selected stop live in OpenUI's response state (`useStateField`), so `AgentInterface` saves them with the message. `/api/chat` turns them into a short note so the model knows the user's current route on the next turn.
-- **Map data.** Wikipedia lookups and street-route geometry go through the app's own server routes, `/api/wiki` and `/api/street-route`, which validate input and cache results. Street geometry comes from the public OSRM demo server's driving profile: a road overview, not walking or transit directions. When it's unavailable, a labelled direct connection is drawn instead.
-- **Theme.** Colors, type, radii, shadows and chat bubbles are theme tokens, applied once through `AgentInterface`'s `theme` prop. All the stylesheets read those tokens rather than repeating their values.
+- **State.** Inputs bind to `$variables` (`Slider($price, 0, 100)`), and any statement that reads them updates as the user interacts. Buttons and `Pressable` run `@Set`, `@Reset`, `@ToAssistant` and `@OpenUrl` steps.
+- **Photos.** `Image` loads its `src`; without one, or when it fails, it asks `/api/image-search`, which returns Wikipedia lead images and Wikimedia Commons files for the description.
+- **Map data.** Street geometry comes from `/api/street-route`, which validates input and caches results from the public OSRM demo server's driving profile: a road overview, not walking or transit directions. When it's unavailable, a labelled direct connection is drawn instead.
+- **Theme.** Colors, type, radii and spacing are tokens in `src/lib/components/theme.css`, with a dark set under `data-theme="dark"`. The chat shell keeps its `AgentInterface` theme from `src/lib/response-theme.ts`.
 
 ## Project structure
 
@@ -103,30 +103,24 @@ What changes with a local model:
 | `src/app/api/chat/route.ts` | Chat endpoint. Validates the request, forwards the conversation to OpenUI Gateway with image search enabled (or to a local Ollama model when `OLLAMA_MODEL` is set), and streams the response back. |
 | `src/app/api/wiki/route.ts` | Wikipedia lookup: photos and coordinates for a place, cached on the server. |
 | `src/app/api/street-route/route.ts` | Street geometry between stops from OSRM, cached on the server. |
-| `src/lib/library.ts` | The OpenUI component library: OpenUI's chat components plus the travel components, with the Travel group's layout note. |
-| `src/lib/prompt-options.ts` | Extra prompt examples and rules for travel answers, added on top of OpenUI's defaults, with a variant for local models that have no image search. |
-| `src/lib/response-theme.ts` | Theme tokens (colors, fonts, radii, shadows, chat bubbles), built with `createTheme()`. |
-| `src/lib/response-theme.css` | Styles OpenUI's built-in components inside answers (buttons, forms, tabs, tables), and defines the `--iui-*` aliases the travel styles use. |
-| `src/lib/route/root.tsx` | The `Card` root every answer renders inside; accepts the travel components as children. |
-| `src/lib/route/route.css` | Layout of the answer container. |
-| `src/lib/route/store.ts` | `useRouteStore()`: route edits kept in OpenUI's response state, plus the client side of the Wikipedia lookup. |
-| `src/lib/travel/components.tsx` | The travel components the model can generate (`defineComponent` + Zod schema each), plus photo fallback logic. |
-| `src/lib/travel/map.tsx` | The map behind `TravelMap`: pins, filter, expand, framing and the route line. |
-| `src/lib/travel/map-utils.ts` | Map helpers: coordinates, bounds, partial lines for the draw animation, pin elements and the emoji check. |
-| `src/lib/travel/use-street-route.ts` | Hook that loads street geometry from `/api/street-route` in the background. |
-| `src/lib/travel/use-dialog.ts` | Hook for the expanded map dialog: scroll lock, focus trap, Escape to close. |
-| `src/lib/travel/vector-basemap.ts` | Loads MapLibre and defines the vector map style and the raster fallback style. |
-| `src/lib/travel/travel.css` | Styles for the travel components and map. |
+| `src/app/api/image-search/route.ts` | Photo search for `Image`: Wikipedia lead images, then Wikimedia Commons, cached on the server. |
+| `src/app/gallery/` | The dev-only `/gallery` page and its OpenUI Lang programs. |
+| `src/lib/library.ts` | The OpenUI component library: the primitives, their groups and prompt notes. |
+| `src/lib/prompt-options.ts` | The OpenUI Lang 1.0 prompt flags the library uses. |
+| `src/lib/response-theme.ts` | Theme tokens for the `AgentInterface` shell (colors, fonts, radii, chat bubbles), built with `createTheme()`. |
+| `src/lib/components/` | The components (`defineComponent` + Zod schema each), their styles and tokens, and the map in `map/`. |
 | `src/generated/spec.json` | Library spec sent to Gateway in the system prompt. Regenerate with `npm run generate` after changing a component schema. |
+| `src/generated/system-prompt.txt` | The full system prompt for the library. Regenerate with `npm run prompt`. |
+| `vendor/openui/` | The OpenUI 1.0 packages, packed from the release branch by `scripts/pack-openui.sh`. |
 | `docs/openui-chatgpt-comparison.mp4` | Side-by-side video of ChatGPT and this project; `docs/openui-chatgpt-comparison.jpg` is its README preview. |
 | `.env.example` | The environment variables to copy into `.env.local`. |
 
 ## Checks
 
 ```bash
-npm run generate       # after changing a component schema
-npx tsc --noEmit
+npm run generate && npm run prompt   # after changing a component schema
+npm run typecheck
 npm run build
 ```
 
-Then try the San Francisco prompt and another city such as Lisbon. Check the photo strip, pins appearing during the stream, the route reveal, map filters and expansion, adding and removing places, and the customize form, on desktop and mobile.
+Then open `/gallery` (`npm run dev`), switch between light and dark, and try it at phone width. `scripts/gallery-shots.mjs` takes the same screenshots headlessly and checks console errors, overflow and the main interactions.
