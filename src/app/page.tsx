@@ -24,6 +24,10 @@ const llm = fetchLLM({
   messageFormat: openAIConversationMessageFormat,
 });
 
+// The library's @CopyToClipboard reaches the host as a custom action. This
+// AgentInterface build has no onAction prop and drops custom actions, so copy
+// buttons do nothing in chat yet; once it has one, pass it runLibraryAction
+// from @/lib/actions (the gallery already does).
 export default function Home() {
   return (
     <div className="chat-shell">

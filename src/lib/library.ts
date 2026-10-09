@@ -1,4 +1,6 @@
 import { createLibrary } from "@openuidev/react-lang";
+import { actions } from "./actions";
+import { functions } from "./functions";
 import "./components/theme.css";
 import "./components/components.css";
 import "./components/map/map.css";
@@ -27,6 +29,8 @@ import { Badge, Caption, Label, Link, List, ListItem, Markdown, Text, Title } fr
 /**
  * Primitives the model arranges itself, plus a few widgets for what a model
  * cannot draw (a street map, a sandboxed HTML page). Layout is never fixed here.
+ * Generic @functions let a page compute with its own state, so an answer can be
+ * a working tool rather than a form sent back to the assistant.
  */
 export const library = createLibrary({
   root: "Col",
@@ -37,6 +41,8 @@ export const library = createLibrary({
     Icon, Image, Table, Chart, MapView, MapMarker,
     ...svgComponents, HtmlView,
   ],
+  functions,
+  actions,
   componentGroups: [
     {
       name: "Layout",

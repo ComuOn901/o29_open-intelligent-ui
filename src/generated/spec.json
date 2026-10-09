@@ -261,6 +261,186 @@
       ]
     }
   ],
+  "functions": {
+    "Append": {
+      "signature": "Append(list: any[], item: any) → any[]",
+      "description": "Copy of the list with item added at the end"
+    },
+    "Prepend": {
+      "signature": "Prepend(list: any[], item: any) → any[]",
+      "description": "Copy of the list with item added at the start"
+    },
+    "Concat": {
+      "signature": "Concat(list: any[], more: any[]) → any[]",
+      "description": "Joins two lists"
+    },
+    "Remove": {
+      "signature": "Remove(list: any[], field: string, value: any) → any[]",
+      "description": "Copy without the items whose field equals value; field \"\" compares the items themselves"
+    },
+    "RemoveAt": {
+      "signature": "RemoveAt(list: any[], index: number) → any[]",
+      "description": "Copy without the item at index (0-based; negative counts from the end)"
+    },
+    "Update": {
+      "signature": "Update(list: any[], field: string, value: any, setField: string, setValue: any) → any[]",
+      "description": "Copy where items whose field equals value get setField set to setValue"
+    },
+    "Toggle": {
+      "signature": "Toggle(list: any[], item: any) → any[]",
+      "description": "Adds item if missing, removes it if present (a set of strings or numbers)"
+    },
+    "Includes": {
+      "signature": "Includes(list: any[] | string, item: any) → boolean",
+      "description": "True if the list has item, or the text contains it"
+    },
+    "Find": {
+      "signature": "Find(list: any[], field: string, value: any) → any",
+      "description": "First item whose field equals value, or null"
+    },
+    "IndexOf": {
+      "signature": "IndexOf(list: any[], item: any) → number",
+      "description": "Index of item in the list, or -1"
+    },
+    "Take": {
+      "signature": "Take(list: any[], n: number) → any[]",
+      "description": "The first n items; a negative n takes the last n"
+    },
+    "Slice": {
+      "signature": "Slice(list: any[], start: number, end?: number) → any[]",
+      "description": "Items from start up to end (not included); negative counts from the end"
+    },
+    "Unique": {
+      "signature": "Unique(list: any[]) → any[]",
+      "description": "Distinct items in first-seen order"
+    },
+    "Reverse": {
+      "signature": "Reverse(list: any[]) → any[]",
+      "description": "Copy in reverse order"
+    },
+    "Range": {
+      "signature": "Range(start: number, end: number, step?: number) → number[]",
+      "description": "Numbers from start up to end (not included) by step (default 1), e.g. @Range(0, 3) is [0, 1, 2]"
+    },
+    "Pick": {
+      "signature": "Pick(list: any[]) → any",
+      "description": "A random item, or null for an empty list; draws anew each time, so call it inside @Set"
+    },
+    "Shuffle": {
+      "signature": "Shuffle(list: any[]) → any[]",
+      "description": "Copy in random order; call it inside @Set"
+    },
+    "Pow": {
+      "signature": "Pow(base: number, exponent: number) → number",
+      "description": "base raised to exponent"
+    },
+    "Sqrt": {
+      "signature": "Sqrt(number: number) → number",
+      "description": "Square root; null for a negative number"
+    },
+    "Random": {
+      "signature": "Random(min: number, max: number, integer?: boolean) → number",
+      "description": "Random number from min to max (integer true: a whole number, max included); draws anew each time, so call it inside @Set"
+    },
+    "Clamp": {
+      "signature": "Clamp(number: number, min: number, max: number) → number",
+      "description": "number kept between min and max"
+    },
+    "Percent": {
+      "signature": "Percent(part: number, total: number) → number",
+      "description": "part / total * 100, e.g. @Percent(3, 4) is 75; 0 when total is 0"
+    },
+    "Lerp": {
+      "signature": "Lerp(a: number, b: number, t: number) → number",
+      "description": "The value a fraction t of the way from a to b"
+    },
+    "Format": {
+      "signature": "Format(value: number, kind?: \"number\" | \"currency\" | \"percent\" | \"compact\", decimals?: number, currency?: string) → string",
+      "description": "Number as text: \"number\" 12,345.6, \"currency\" $12,345.68 (currency is a code like \"EUR\"), \"percent\" 45 -> 45%, \"compact\" 1.2M ($1.2M with a currency)"
+    },
+    "Join": {
+      "signature": "Join(list: any[], sep?: string, field?: string) → string",
+      "description": "Joins the items (or their field) into text with sep (default \", \"), skipping nulls"
+    },
+    "Plural": {
+      "signature": "Plural(n: number, word: string, plural?: string) → string",
+      "description": "Count and word: @Plural(1, \"guest\") is \"1 guest\", 3 gives \"3 guests\"; plural defaults to word + \"s\""
+    },
+    "Pad": {
+      "signature": "Pad(value: string | number, length: number, char?: string) → string",
+      "description": "Pads the start of value to length with char (default \"0\"), e.g. 7 -> \"07\""
+    },
+    "Upper": {
+      "signature": "Upper(text: string) → string",
+      "description": "Text in upper case"
+    },
+    "Lower": {
+      "signature": "Lower(text: string) → string",
+      "description": "Text in lower case"
+    },
+    "Now": {
+      "signature": "Now() → string",
+      "description": "The current date and time as an ISO string"
+    },
+    "FormatDate": {
+      "signature": "FormatDate(date: string | number, style?: \"date\" | \"short\" | \"long\" | \"weekday\" | \"month\" | \"time\" | \"datetime\" | \"iso\") → string",
+      "description": "A date as text: \"date\" Oct 9, 2026 (default), \"short\" Oct 9, \"long\" Friday, October 9, 2026, \"weekday\" Fri, \"month\" Oct 2026, \"time\" 9:30 PM, \"datetime\", \"iso\" 2026-10-09. Dates are \"YYYY-MM-DD\", ISO or a timestamp"
+    },
+    "AddDays": {
+      "signature": "AddDays(date: string | number, days: number) → string",
+      "description": "The date days later (negative: earlier), as \"YYYY-MM-DD\""
+    },
+    "DaysBetween": {
+      "signature": "DaysBetween(from: string | number, to: string | number) → number",
+      "description": "Calendar days from one date to another (negative if to is earlier)"
+    },
+    "GroupBy": {
+      "signature": "GroupBy(rows: any[], key: string, field?: string, agg?: \"sum\" | \"avg\" | \"count\" | \"min\" | \"max\") → {key: string | number, value: number}[]",
+      "description": "One row per distinct key, in first-seen order; value is agg of field (default \"sum\"), or the row count without a field"
+    },
+    "Pivot": {
+      "signature": "Pivot(rows: any[], rowKey: string, colKey: string, field?: string, agg?: \"sum\" | \"avg\" | \"count\" | \"min\" | \"max\") → Record<string, string | number>[]",
+      "description": "One row per rowKey value with a column per colKey value holding agg of field, for stacked or grouped charts"
+    },
+    "Top": {
+      "signature": "Top(rows: any[], field: string, n: number, direction?: \"desc\" | \"asc\") → any[]",
+      "description": "The n rows with the largest field (\"asc\": the smallest)"
+    },
+    "Between": {
+      "signature": "Between(rows: any[], field: string, min?: any, max?: any) → any[]",
+      "description": "Rows whose field is from min to max, both included; compares numbers, or text such as \"YYYY-MM-DD\" dates. Leave min or max null for an open end"
+    },
+    "Bucket": {
+      "signature": "Bucket(rows: any[], dateField: string, unit: \"day\" | \"week\" | \"month\", field?: string, agg?: \"sum\" | \"avg\" | \"count\" | \"min\" | \"max\") → {key: string | number, value: number}[]",
+      "description": "Rows per day, week (from Monday) or month of dateField, in date order, empty periods 0 for sum and count; key is \"YYYY-MM-DD\", or \"YYYY-MM\" for months"
+    },
+    "Cumulative": {
+      "signature": "Cumulative(rows: any[], field: string) → any[]",
+      "description": "Copy of the rows with field replaced by its running total (field \"\" for a list of numbers)"
+    },
+    "MovingAvg": {
+      "signature": "MovingAvg(rows: any[], field: string, window: number) → any[]",
+      "description": "Copy of the rows with field replaced by the average of its last window values (field \"\" for a list of numbers)"
+    },
+    "Change": {
+      "signature": "Change(current: number, previous: number) → number",
+      "description": "Percent change from previous to current, e.g. @Change(120, 100) is 20; null when previous is 0"
+    },
+    "Histogram": {
+      "signature": "Histogram(values: number[], bins: number, min?: number, max?: number) → {key: string, value: number, start: number, end: number}[]",
+      "description": "Counts numbers into equal-width bins (value is the count); min and max fix the range, default the data's"
+    },
+    "Stats": {
+      "signature": "Stats(values: number[]) → {count: number, min: number, max: number, mean: number, median: number, stdev: number}",
+      "description": "Summary of numbers, all zeros for an empty list"
+    }
+  },
+  "actions": {
+    "CopyToClipboard": {
+      "signature": "CopyToClipboard(text: string)",
+      "description": "Copy text to the clipboard, e.g. a shopping list built with @Join"
+    }
+  },
   "schema": {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "type": "object",
@@ -1868,6 +2048,1224 @@
         ],
         "additionalProperties": false,
         "description": "Sandboxed HTML page with inline JS, for games and canvas. No network except script CDNs. Fits its content unless height is set."
+      }
+    },
+    "functions": {
+      "Append": {
+        "description": "Copy of the list with item added at the end",
+        "params": {
+          "type": "object",
+          "properties": {
+            "list": {
+              "type": "array",
+              "items": {}
+            },
+            "item": {}
+          },
+          "required": [
+            "list",
+            "item"
+          ],
+          "additionalProperties": false
+        },
+        "returns": {
+          "type": "array",
+          "items": {}
+        }
+      },
+      "Prepend": {
+        "description": "Copy of the list with item added at the start",
+        "params": {
+          "type": "object",
+          "properties": {
+            "list": {
+              "type": "array",
+              "items": {}
+            },
+            "item": {}
+          },
+          "required": [
+            "list",
+            "item"
+          ],
+          "additionalProperties": false
+        },
+        "returns": {
+          "type": "array",
+          "items": {}
+        }
+      },
+      "Concat": {
+        "description": "Joins two lists",
+        "params": {
+          "type": "object",
+          "properties": {
+            "list": {
+              "type": "array",
+              "items": {}
+            },
+            "more": {
+              "type": "array",
+              "items": {}
+            }
+          },
+          "required": [
+            "list",
+            "more"
+          ],
+          "additionalProperties": false
+        },
+        "returns": {
+          "type": "array",
+          "items": {}
+        }
+      },
+      "Remove": {
+        "description": "Copy without the items whose field equals value; field \"\" compares the items themselves",
+        "params": {
+          "type": "object",
+          "properties": {
+            "list": {
+              "type": "array",
+              "items": {}
+            },
+            "field": {
+              "type": "string"
+            },
+            "value": {}
+          },
+          "required": [
+            "list",
+            "field",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        "returns": {
+          "type": "array",
+          "items": {}
+        }
+      },
+      "RemoveAt": {
+        "description": "Copy without the item at index (0-based; negative counts from the end)",
+        "params": {
+          "type": "object",
+          "properties": {
+            "list": {
+              "type": "array",
+              "items": {}
+            },
+            "index": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "list",
+            "index"
+          ],
+          "additionalProperties": false
+        },
+        "returns": {
+          "type": "array",
+          "items": {}
+        }
+      },
+      "Update": {
+        "description": "Copy where items whose field equals value get setField set to setValue",
+        "params": {
+          "type": "object",
+          "properties": {
+            "list": {
+              "type": "array",
+              "items": {}
+            },
+            "field": {
+              "type": "string"
+            },
+            "value": {},
+            "setField": {
+              "type": "string"
+            },
+            "setValue": {}
+          },
+          "required": [
+            "list",
+            "field",
+            "value",
+            "setField",
+            "setValue"
+          ],
+          "additionalProperties": false
+        },
+        "returns": {
+          "type": "array",
+          "items": {}
+        }
+      },
+      "Toggle": {
+        "description": "Adds item if missing, removes it if present (a set of strings or numbers)",
+        "params": {
+          "type": "object",
+          "properties": {
+            "list": {
+              "type": "array",
+              "items": {}
+            },
+            "item": {}
+          },
+          "required": [
+            "list",
+            "item"
+          ],
+          "additionalProperties": false
+        },
+        "returns": {
+          "type": "array",
+          "items": {}
+        }
+      },
+      "Includes": {
+        "description": "True if the list has item, or the text contains it",
+        "params": {
+          "type": "object",
+          "properties": {
+            "list": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {}
+                },
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            "item": {}
+          },
+          "required": [
+            "list",
+            "item"
+          ],
+          "additionalProperties": false
+        },
+        "returns": {
+          "type": "boolean"
+        }
+      },
+      "Find": {
+        "description": "First item whose field equals value, or null",
+        "params": {
+          "type": "object",
+          "properties": {
+            "list": {
+              "type": "array",
+              "items": {}
+            },
+            "field": {
+              "type": "string"
+            },
+            "value": {}
+          },
+          "required": [
+            "list",
+            "field",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        "returns": {}
+      },
+      "IndexOf": {
+        "description": "Index of item in the list, or -1",
+        "params": {
+          "type": "object",
+          "properties": {
+            "list": {
+              "type": "array",
+              "items": {}
+            },
+            "item": {}
+          },
+          "required": [
+            "list",
+            "item"
+          ],
+          "additionalProperties": false
+        },
+        "returns": {
+          "type": "number"
+        }
+      },
+      "Take": {
+        "description": "The first n items; a negative n takes the last n",
+        "params": {
+          "type": "object",
+          "properties": {
+            "list": {
+              "type": "array",
+              "items": {}
+            },
+            "n": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "list",
+            "n"
+          ],
+          "additionalProperties": false
+        },
+        "returns": {
+          "type": "array",
+          "items": {}
+        }
+      },
+      "Slice": {
+        "description": "Items from start up to end (not included); negative counts from the end",
+        "params": {
+          "type": "object",
+          "properties": {
+            "list": {
+              "type": "array",
+              "items": {}
+            },
+            "start": {
+              "type": "number"
+            },
+            "end": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "list",
+            "start"
+          ],
+          "additionalProperties": false
+        },
+        "returns": {
+          "type": "array",
+          "items": {}
+        }
+      },
+      "Unique": {
+        "description": "Distinct items in first-seen order",
+        "params": {
+          "type": "object",
+          "properties": {
+            "list": {
+              "type": "array",
+              "items": {}
+            }
+          },
+          "required": [
+            "list"
+          ],
+          "additionalProperties": false
+        },
+        "returns": {
+          "type": "array",
+          "items": {}
+        }
+      },
+      "Reverse": {
+        "description": "Copy in reverse order",
+        "params": {
+          "type": "object",
+          "properties": {
+            "list": {
+              "type": "array",
+              "items": {}
+            }
+          },
+          "required": [
+            "list"
+          ],
+          "additionalProperties": false
+        },
+        "returns": {
+          "type": "array",
+          "items": {}
+        }
+      },
+      "Range": {
+        "description": "Numbers from start up to end (not included) by step (default 1), e.g. @Range(0, 3) is [0, 1, 2]",
+        "params": {
+          "type": "object",
+          "properties": {
+            "start": {
+              "type": "number"
+            },
+            "end": {
+              "type": "number"
+            },
+            "step": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "start",
+            "end"
+          ],
+          "additionalProperties": false
+        },
+        "returns": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          }
+        }
+      },
+      "Pick": {
+        "description": "A random item, or null for an empty list; draws anew each time, so call it inside @Set",
+        "params": {
+          "type": "object",
+          "properties": {
+            "list": {
+              "type": "array",
+              "items": {}
+            }
+          },
+          "required": [
+            "list"
+          ],
+          "additionalProperties": false
+        },
+        "returns": {}
+      },
+      "Shuffle": {
+        "description": "Copy in random order; call it inside @Set",
+        "params": {
+          "type": "object",
+          "properties": {
+            "list": {
+              "type": "array",
+              "items": {}
+            }
+          },
+          "required": [
+            "list"
+          ],
+          "additionalProperties": false
+        },
+        "returns": {
+          "type": "array",
+          "items": {}
+        }
+      },
+      "Pow": {
+        "description": "base raised to exponent",
+        "params": {
+          "type": "object",
+          "properties": {
+            "base": {
+              "type": "number"
+            },
+            "exponent": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "base",
+            "exponent"
+          ],
+          "additionalProperties": false
+        },
+        "returns": {
+          "type": "number"
+        }
+      },
+      "Sqrt": {
+        "description": "Square root; null for a negative number",
+        "params": {
+          "type": "object",
+          "properties": {
+            "number": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "number"
+          ],
+          "additionalProperties": false
+        },
+        "returns": {
+          "type": "number"
+        }
+      },
+      "Random": {
+        "description": "Random number from min to max (integer true: a whole number, max included); draws anew each time, so call it inside @Set",
+        "params": {
+          "type": "object",
+          "properties": {
+            "min": {
+              "type": "number"
+            },
+            "max": {
+              "type": "number"
+            },
+            "integer": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "min",
+            "max"
+          ],
+          "additionalProperties": false
+        },
+        "returns": {
+          "type": "number"
+        }
+      },
+      "Clamp": {
+        "description": "number kept between min and max",
+        "params": {
+          "type": "object",
+          "properties": {
+            "number": {
+              "type": "number"
+            },
+            "min": {
+              "type": "number"
+            },
+            "max": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "number",
+            "min",
+            "max"
+          ],
+          "additionalProperties": false
+        },
+        "returns": {
+          "type": "number"
+        }
+      },
+      "Percent": {
+        "description": "part / total * 100, e.g. @Percent(3, 4) is 75; 0 when total is 0",
+        "params": {
+          "type": "object",
+          "properties": {
+            "part": {
+              "type": "number"
+            },
+            "total": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "part",
+            "total"
+          ],
+          "additionalProperties": false
+        },
+        "returns": {
+          "type": "number"
+        }
+      },
+      "Lerp": {
+        "description": "The value a fraction t of the way from a to b",
+        "params": {
+          "type": "object",
+          "properties": {
+            "a": {
+              "type": "number"
+            },
+            "b": {
+              "type": "number"
+            },
+            "t": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "a",
+            "b",
+            "t"
+          ],
+          "additionalProperties": false
+        },
+        "returns": {
+          "type": "number"
+        }
+      },
+      "Format": {
+        "description": "Number as text: \"number\" 12,345.6, \"currency\" $12,345.68 (currency is a code like \"EUR\"), \"percent\" 45 -> 45%, \"compact\" 1.2M ($1.2M with a currency)",
+        "params": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "type": "number"
+            },
+            "kind": {
+              "type": "string",
+              "enum": [
+                "number",
+                "currency",
+                "percent",
+                "compact"
+              ]
+            },
+            "decimals": {
+              "type": "number"
+            },
+            "currency": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        "returns": {
+          "type": "string"
+        }
+      },
+      "Join": {
+        "description": "Joins the items (or their field) into text with sep (default \", \"), skipping nulls",
+        "params": {
+          "type": "object",
+          "properties": {
+            "list": {
+              "type": "array",
+              "items": {}
+            },
+            "sep": {
+              "type": "string"
+            },
+            "field": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "list"
+          ],
+          "additionalProperties": false
+        },
+        "returns": {
+          "type": "string"
+        }
+      },
+      "Plural": {
+        "description": "Count and word: @Plural(1, \"guest\") is \"1 guest\", 3 gives \"3 guests\"; plural defaults to word + \"s\"",
+        "params": {
+          "type": "object",
+          "properties": {
+            "n": {
+              "type": "number"
+            },
+            "word": {
+              "type": "string"
+            },
+            "plural": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "n",
+            "word"
+          ],
+          "additionalProperties": false
+        },
+        "returns": {
+          "type": "string"
+        }
+      },
+      "Pad": {
+        "description": "Pads the start of value to length with char (default \"0\"), e.g. 7 -> \"07\"",
+        "params": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "type": [
+                "string",
+                "number"
+              ]
+            },
+            "length": {
+              "type": "number"
+            },
+            "char": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "value",
+            "length"
+          ],
+          "additionalProperties": false
+        },
+        "returns": {
+          "type": "string"
+        }
+      },
+      "Upper": {
+        "description": "Text in upper case",
+        "params": {
+          "type": "object",
+          "properties": {
+            "text": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "text"
+          ],
+          "additionalProperties": false
+        },
+        "returns": {
+          "type": "string"
+        }
+      },
+      "Lower": {
+        "description": "Text in lower case",
+        "params": {
+          "type": "object",
+          "properties": {
+            "text": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "text"
+          ],
+          "additionalProperties": false
+        },
+        "returns": {
+          "type": "string"
+        }
+      },
+      "Now": {
+        "description": "The current date and time as an ISO string",
+        "params": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": false
+        },
+        "returns": {
+          "type": "string"
+        }
+      },
+      "FormatDate": {
+        "description": "A date as text: \"date\" Oct 9, 2026 (default), \"short\" Oct 9, \"long\" Friday, October 9, 2026, \"weekday\" Fri, \"month\" Oct 2026, \"time\" 9:30 PM, \"datetime\", \"iso\" 2026-10-09. Dates are \"YYYY-MM-DD\", ISO or a timestamp",
+        "params": {
+          "type": "object",
+          "properties": {
+            "date": {
+              "type": [
+                "string",
+                "number"
+              ]
+            },
+            "style": {
+              "type": "string",
+              "enum": [
+                "date",
+                "short",
+                "long",
+                "weekday",
+                "month",
+                "time",
+                "datetime",
+                "iso"
+              ]
+            }
+          },
+          "required": [
+            "date"
+          ],
+          "additionalProperties": false
+        },
+        "returns": {
+          "type": "string"
+        }
+      },
+      "AddDays": {
+        "description": "The date days later (negative: earlier), as \"YYYY-MM-DD\"",
+        "params": {
+          "type": "object",
+          "properties": {
+            "date": {
+              "type": [
+                "string",
+                "number"
+              ]
+            },
+            "days": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "date",
+            "days"
+          ],
+          "additionalProperties": false
+        },
+        "returns": {
+          "type": "string"
+        }
+      },
+      "DaysBetween": {
+        "description": "Calendar days from one date to another (negative if to is earlier)",
+        "params": {
+          "type": "object",
+          "properties": {
+            "from": {
+              "type": [
+                "string",
+                "number"
+              ]
+            },
+            "to": {
+              "type": [
+                "string",
+                "number"
+              ]
+            }
+          },
+          "required": [
+            "from",
+            "to"
+          ],
+          "additionalProperties": false
+        },
+        "returns": {
+          "type": "number"
+        }
+      },
+      "GroupBy": {
+        "description": "One row per distinct key, in first-seen order; value is agg of field (default \"sum\"), or the row count without a field",
+        "params": {
+          "type": "object",
+          "properties": {
+            "rows": {
+              "type": "array",
+              "items": {}
+            },
+            "key": {
+              "type": "string"
+            },
+            "field": {
+              "type": "string"
+            },
+            "agg": {
+              "type": "string",
+              "enum": [
+                "sum",
+                "avg",
+                "count",
+                "min",
+                "max"
+              ]
+            }
+          },
+          "required": [
+            "rows",
+            "key"
+          ],
+          "additionalProperties": false
+        },
+        "returns": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "key": {
+                "type": [
+                  "string",
+                  "number"
+                ]
+              },
+              "value": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "key",
+              "value"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "Pivot": {
+        "description": "One row per rowKey value with a column per colKey value holding agg of field, for stacked or grouped charts",
+        "params": {
+          "type": "object",
+          "properties": {
+            "rows": {
+              "type": "array",
+              "items": {}
+            },
+            "rowKey": {
+              "type": "string"
+            },
+            "colKey": {
+              "type": "string"
+            },
+            "field": {
+              "type": "string"
+            },
+            "agg": {
+              "type": "string",
+              "enum": [
+                "sum",
+                "avg",
+                "count",
+                "min",
+                "max"
+              ]
+            }
+          },
+          "required": [
+            "rows",
+            "rowKey",
+            "colKey"
+          ],
+          "additionalProperties": false
+        },
+        "returns": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "propertyNames": {
+              "type": "string"
+            },
+            "additionalProperties": {
+              "type": [
+                "string",
+                "number"
+              ]
+            }
+          }
+        }
+      },
+      "Top": {
+        "description": "The n rows with the largest field (\"asc\": the smallest)",
+        "params": {
+          "type": "object",
+          "properties": {
+            "rows": {
+              "type": "array",
+              "items": {}
+            },
+            "field": {
+              "type": "string"
+            },
+            "n": {
+              "type": "number"
+            },
+            "direction": {
+              "type": "string",
+              "enum": [
+                "desc",
+                "asc"
+              ]
+            }
+          },
+          "required": [
+            "rows",
+            "field",
+            "n"
+          ],
+          "additionalProperties": false
+        },
+        "returns": {
+          "type": "array",
+          "items": {}
+        }
+      },
+      "Between": {
+        "description": "Rows whose field is from min to max, both included; compares numbers, or text such as \"YYYY-MM-DD\" dates. Leave min or max null for an open end",
+        "params": {
+          "type": "object",
+          "properties": {
+            "rows": {
+              "type": "array",
+              "items": {}
+            },
+            "field": {
+              "type": "string"
+            },
+            "min": {},
+            "max": {}
+          },
+          "required": [
+            "rows",
+            "field"
+          ],
+          "additionalProperties": false
+        },
+        "returns": {
+          "type": "array",
+          "items": {}
+        }
+      },
+      "Bucket": {
+        "description": "Rows per day, week (from Monday) or month of dateField, in date order, empty periods 0 for sum and count; key is \"YYYY-MM-DD\", or \"YYYY-MM\" for months",
+        "params": {
+          "type": "object",
+          "properties": {
+            "rows": {
+              "type": "array",
+              "items": {}
+            },
+            "dateField": {
+              "type": "string"
+            },
+            "unit": {
+              "type": "string",
+              "enum": [
+                "day",
+                "week",
+                "month"
+              ]
+            },
+            "field": {
+              "type": "string"
+            },
+            "agg": {
+              "type": "string",
+              "enum": [
+                "sum",
+                "avg",
+                "count",
+                "min",
+                "max"
+              ]
+            }
+          },
+          "required": [
+            "rows",
+            "dateField",
+            "unit"
+          ],
+          "additionalProperties": false
+        },
+        "returns": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "key": {
+                "type": [
+                  "string",
+                  "number"
+                ]
+              },
+              "value": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "key",
+              "value"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "Cumulative": {
+        "description": "Copy of the rows with field replaced by its running total (field \"\" for a list of numbers)",
+        "params": {
+          "type": "object",
+          "properties": {
+            "rows": {
+              "type": "array",
+              "items": {}
+            },
+            "field": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "rows",
+            "field"
+          ],
+          "additionalProperties": false
+        },
+        "returns": {
+          "type": "array",
+          "items": {}
+        }
+      },
+      "MovingAvg": {
+        "description": "Copy of the rows with field replaced by the average of its last window values (field \"\" for a list of numbers)",
+        "params": {
+          "type": "object",
+          "properties": {
+            "rows": {
+              "type": "array",
+              "items": {}
+            },
+            "field": {
+              "type": "string"
+            },
+            "window": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "rows",
+            "field",
+            "window"
+          ],
+          "additionalProperties": false
+        },
+        "returns": {
+          "type": "array",
+          "items": {}
+        }
+      },
+      "Change": {
+        "description": "Percent change from previous to current, e.g. @Change(120, 100) is 20; null when previous is 0",
+        "params": {
+          "type": "object",
+          "properties": {
+            "current": {
+              "type": "number"
+            },
+            "previous": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "current",
+            "previous"
+          ],
+          "additionalProperties": false
+        },
+        "returns": {
+          "type": [
+            "number",
+            "null"
+          ]
+        }
+      },
+      "Histogram": {
+        "description": "Counts numbers into equal-width bins (value is the count); min and max fix the range, default the data's",
+        "params": {
+          "type": "object",
+          "properties": {
+            "values": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              }
+            },
+            "bins": {
+              "type": "number"
+            },
+            "min": {
+              "type": "number"
+            },
+            "max": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "values",
+            "bins"
+          ],
+          "additionalProperties": false
+        },
+        "returns": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "key": {
+                "type": "string"
+              },
+              "value": {
+                "type": "number"
+              },
+              "start": {
+                "type": "number"
+              },
+              "end": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "key",
+              "value",
+              "start",
+              "end"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "Stats": {
+        "description": "Summary of numbers, all zeros for an empty list",
+        "params": {
+          "type": "object",
+          "properties": {
+            "values": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              }
+            }
+          },
+          "required": [
+            "values"
+          ],
+          "additionalProperties": false
+        },
+        "returns": {
+          "type": "object",
+          "properties": {
+            "count": {
+              "type": "number"
+            },
+            "min": {
+              "type": "number"
+            },
+            "max": {
+              "type": "number"
+            },
+            "mean": {
+              "type": "number"
+            },
+            "median": {
+              "type": "number"
+            },
+            "stdev": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "count",
+            "min",
+            "max",
+            "mean",
+            "median",
+            "stdev"
+          ],
+          "additionalProperties": false
+        }
+      }
+    },
+    "actions": {
+      "CopyToClipboard": {
+        "description": "Copy text to the clipboard, e.g. a shopping list built with @Join",
+        "params": {
+          "type": "object",
+          "properties": {
+            "text": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "text"
+          ],
+          "additionalProperties": false
+        }
       }
     }
   }
