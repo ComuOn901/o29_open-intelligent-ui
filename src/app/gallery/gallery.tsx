@@ -3,10 +3,26 @@
 import "./gallery.css";
 
 import { Renderer, type ActionEvent, type OpenUIError } from "@openuidev/react-lang";
-import { useCallback, useState } from "react";
-import { library } from "@/lib/library";
+import { Fragment, useCallback, useState } from "react";
+import { runLibraryAction } from "@/lib/actions";
 import { webUrl } from "@/lib/components/style";
+import { demoTools } from "@/lib/demo-data";
+import { library } from "@/lib/library";
+import { exampleBillSplitter, exampleDashboard, exampleShoppingList } from "@/lib/prompt-options";
 import { programs, type Program } from "./programs";
+import { toolPrograms } from "./tool-programs";
+
+// The prompt's worked examples, rendered so they are known to work
+const promptExamples: Program[] = [
+  { id: "example-list", title: "Prompt example: shopping list", note: "Example 1 of the working-tool prompt.", code: exampleShoppingList },
+  { id: "example-bill", title: "Prompt example: bill splitter", note: "Example 2 of the working-tool prompt.", code: exampleBillSplitter },
+  { id: "example-dashboard", title: "Prompt example: dashboard", note: "Example 3, shown when the demo data tools are in the prompt.", code: exampleDashboard },
+];
+
+const sections = [
+  { title: "Working tools", programs: [...toolPrograms, ...promptExamples] },
+  { title: "Components", programs },
+];
 
 function Example({ program, onAction }: { program: Program; onAction: (event: ActionEvent) => void }) {
   const [errors, setErrors] = useState<OpenUIError[]>([]);
@@ -21,7 +37,7 @@ function Example({ program, onAction }: { program: Program; onAction: (event: Ac
         <p>{program.note}</p>
       </header>
       <div className="gallery-preview">
-        <Renderer response={program.code} library={library} isStreaming={false} onAction={onAction} onError={onError} />
+        <Renderer response={program.code} library={library} isStreaming={false} onAction={onAction} onError={onError} toolProvider={demoTools} />
       </div>
       {errors.length > 0 && (
         <ul className="gallery-errors">
@@ -39,6 +55,11 @@ function Example({ program, onAction }: { program: Program; onAction: (event: Ac
 export function Gallery({ theme }: { theme: "light" | "dark" }) {
   const [notice, setNotice] = useState("");
   const onAction = useCallback((event: ActionEvent) => {
+    const custom = runLibraryAction(event);
+    if (custom) {
+      void custom.then((ok) => setNotice(ok ? "Copied to the clipboard" : "Could not copy"));
+      return;
+    }
     if (event.type === "open_url") {
       const url = webUrl((event.params as { url?: unknown })?.url);
       if (url) window.open(url, "_blank", "noopener,noreferrer");
@@ -64,12 +85,19 @@ export function Gallery({ theme }: { theme: "light" | "dark" }) {
       <main className="gallery-content">
         <div className="gallery-intro">
           <h1>Primitives, composed by the model</h1>
-          <p>Hand-written OpenUI Lang 1.0 programs rendered by the 1.0 Renderer with this app&apos;s library. {library.components ? Object.keys(library.components).length : 0} components.</p>
-          <nav className="gallery-index" aria-label="Examples">
-            {programs.map((p) => <a key={p.id} href={`#${p.id}`}>{p.title}</a>)}
-          </nav>
+          <p>Hand-written OpenUI Lang 1.0 programs rendered by the 1.0 Renderer with this app&apos;s library. {Object.keys(library.components).length} components and {Object.keys(library.functions).length} functions.</p>
+          {sections.map((section) => (
+            <nav key={section.title} className="gallery-index" aria-label={section.title}>
+              {section.programs.map((p) => <a key={p.id} href={`#${p.id}`}>{p.title}</a>)}
+            </nav>
+          ))}
         </div>
-        {programs.map((program) => <Example key={program.id} program={program} onAction={onAction} />)}
+        {sections.map((section) => (
+          <Fragment key={section.title}>
+            <h2 className="gallery-section">{section.title}</h2>
+            {section.programs.map((program) => <Example key={program.id} program={program} onAction={onAction} />)}
+          </Fragment>
+        ))}
       </main>
       {notice && (
         <div className="gallery-notice" role="status">

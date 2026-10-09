@@ -18,6 +18,8 @@ const browser = await chromium.launch(process.env.CHROME ? { executablePath: pro
 const report = [];
 // Keeps react-lang's dev-only OpenUI Inspect bubble out of the screenshots.
 const hideInspector = () => { globalThis[Symbol.for("openui.devtools.autoMount")] = true; };
+// A sticky header would cover the top of tall element screenshots.
+const unstick = (page) => page.addStyleTag({ content: ".gallery-top { position: static !important; }" });
 /** Scrolls through the page so lazy images load, then returns to the top. */
 async function scrollThrough(page) {
   const height = await page.evaluate(() => document.documentElement.scrollHeight);
@@ -37,6 +39,7 @@ for (const theme of ["light", "dark"]) {
     page.on("console", (m) => { if (m.type() === "error" || m.type() === "warning") problems.push(`${m.type()}: ${m.text()}`); });
     page.on("pageerror", (e) => problems.push(`pageerror: ${e.message}`));
     await page.goto(`${base}/gallery?theme=${theme}`, { waitUntil: "networkidle", timeout: 120000 });
+    await unstick(page);
     await scrollThrough(page);
     // Map tiles, the street route and image searches settle in the background.
     await page.waitForTimeout(6000);
@@ -60,10 +63,12 @@ for (const theme of ["light", "dark"]) {
   }
 }
 
-// Interactions, once, in light at desktop width.
-const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+// Interactions, once, in light at desktop width. The clipboard is readable so copies can be checked.
+const context = await browser.newContext({ viewport: { width: 1280, height: 900 }, permissions: ["clipboard-read", "clipboard-write"] });
+const page = await context.newPage();
 await page.addInitScript(hideInspector);
 await page.goto(`${base}/gallery?theme=light`, { waitUntil: "networkidle", timeout: 120000 });
+await unstick(page);
 const text = (sel) => page.locator(sel).innerText();
 const checks = {};
 const total = "#gdp .iui-title-2xl";
@@ -110,6 +115,116 @@ await page.locator("#map").screenshot({ path: `${out}/interact-map.png` });
 await page.locator("#html").screenshot({ path: `${out}/interact-game.png` });
 report.push({ name: "interactions", checks });
 
+// The working tools: each one's main interaction, all in the page.
+const tools = {};
+const clipboard = () => page.evaluate(() => navigator.clipboard.readText()).catch((e) => `unreadable: ${e.message}`);
+const dismiss = () => page.locator(".gallery-notice button").click().catch(() => {});
+const row = (id, text) => page.locator(`#${id} .gallery-preview`).getByText(text, { exact: true }).first();
+const inner = (sel) => page.locator(sel).first().innerText();
+const shot = (id, step) => page.locator(`#${id}`).screenshot({ path: `${out}/tool-${id}-${step}.png` });
+
+// Sunday roast: two more guests rescale the list; tick an item; copy the list
+await dismiss();
+const lamb = page.locator("#recipe [role=button]", { hasText: "Bone-in leg of lamb" });
+tools.roastBefore = await lamb.innerText();
+await page.locator("#recipe button[aria-label='More guests']").click();
+await page.locator("#recipe button[aria-label='More guests']").click();
+tools.roastAfter = await lamb.innerText();
+await lamb.click();
+tools.roastBasket = await inner("#recipe .iui-badge");
+await page.locator("#recipe button", { hasText: "Copy shopping list" }).click();
+await page.waitForTimeout(200);
+tools.roastNotice = await inner(".gallery-notice").catch(() => null);
+tools.roastClipboard = (await clipboard()).split("\n").slice(0, 3);
+await shot("recipe", "after");
+
+// Split the bill: remove Sam, add Riley, share the wine with Sam's seat gone, then split equally
+await dismiss();
+const shares = () => page.$$eval("#bill .iui-card-soft .iui-row", (els) => els.map((e) => e.innerText.replace(/\s+/g, " ")));
+tools.billBefore = await shares();
+await page.locator("#bill button", { hasText: /^Sam$/ }).first().click();
+await page.locator("#bill input[placeholder='Add a person']").fill("Riley");
+await page.locator("#bill button", { hasText: /^Add$/ }).click();
+tools.billAfterPeople = await shares();
+await page.locator("#bill .iui-card .iui-card", { hasText: "A bottle of red" }).locator("button", { hasText: "Riley" }).click();
+tools.billAfterToggle = await shares();
+await page.locator("#bill [role=radio]", { hasText: "Equally" }).click();
+tools.billEqual = await shares();
+await page.locator("#bill button", { hasText: "Copy the split" }).click();
+await page.waitForTimeout(200);
+tools.billClipboard = (await clipboard()).split("\n");
+await shot("bill", "after");
+
+// Monty Hall: pick door 1, switch, then simulate 1,000 games
+await dismiss();
+await page.locator("#monty [role=button]", { hasText: "Door 1" }).click();
+tools.montyPicked = await inner("#monty .iui-title-md");
+await page.locator("#monty button", { hasText: "Switch doors" }).click();
+tools.montyResult = await inner("#monty .iui-title-md");
+await page.locator("#monty button", { hasText: "Simulate 1,000 games" }).click();
+await page.waitForTimeout(300);
+tools.montySim = await inner("#monty .iui-card-soft");
+await shot("monty", "after");
+
+// Retirement savings: raise the return; the balance follows
+const balance = () => page.locator("#savings .iui-card-soft").first().innerText();
+tools.savingsBefore = await balance();
+const rate = page.locator("#savings input[type=range]").nth(3);
+await rate.focus();
+for (let i = 0; i < 4; i++) await page.keyboard.press("ArrowRight");
+tools.savingsAfter = await balance();
+tools.savingsMilestone = await page.locator("#savings .iui-text", { hasText: "million" }).innerText();
+await shot("savings", "after");
+
+// GDP: push net exports below zero; answer the quiz
+const x = page.locator("#gdp-explained input[type=range]").nth(3);
+await x.focus();
+for (let i = 0; i < 12; i++) await page.keyboard.press("ArrowLeft");
+tools.gdpTotal = await inner("#gdp-explained .iui-title-2xl");
+tools.gdpNote = await page.locator("#gdp-explained p", { hasText: "Net imports subtract" }).innerText().catch(() => null);
+await page.locator("#gdp-explained label", { hasText: "Nominal GDP rises" }).click();
+tools.gdpQuiz = await page.locator("#gdp-explained p", { hasText: "Correct" }).innerText().catch(() => null);
+await shot("gdp-explained", "after");
+
+// Central limit theorem: draw 100, then 500 more; switching population starts from zero
+const samples = () => page.locator("#clt .iui-card-soft").first().innerText();
+let t = Date.now();
+await page.locator("#clt button", { hasText: "Draw 100 samples" }).click();
+tools.clt100 = { text: await samples(), ms: Date.now() - t };
+t = Date.now();
+await page.locator("#clt button", { hasText: "Draw 500" }).click();
+tools.clt600 = { text: await samples(), ms: Date.now() - t };
+tools.cltSpread = await page.locator("#clt .iui-card-soft").nth(2).innerText();
+await shot("clt", "after");
+await page.locator("#clt [role=radio]", { hasText: "Uniform" }).click();
+tools.cltUniform = await samples();
+
+// Dashboards: data arrives from the demo tools; filters re-compute everything
+const kpi = (id) => page.locator(`#${id} .iui-card`).first().innerText();
+tools.salesAll = await kpi("dash-sales");
+await page.locator("#dash-sales select").selectOption("Retail");
+tools.salesRetail = await kpi("dash-sales");
+await page.locator("#dash-sales [role=radio]", { hasText: "Cumulative" }).click();
+tools.salesCumulativePaths = await page.locator("#dash-sales .iui-chart-plot path").count();
+await page.locator("#dash-sales [role=radio]", { hasText: "30d" }).click();
+await page.waitForTimeout(500);
+tools.salesThirtyDays = await kpi("dash-sales");
+await shot("dash-sales", "after");
+tools.supportAll = await kpi("dash-support");
+await page.locator("#dash-support select").selectOption("Technical");
+tools.supportTechnical = await kpi("dash-support");
+await shot("dash-support", "after");
+
+// The prompt's examples
+await page.locator("#example-list button[aria-label='More']").click();
+tools.exampleList = await inner("#example-list .iui-title");
+await page.locator("#example-bill input[placeholder='Name']").fill("Sam");
+await page.locator("#example-bill input[placeholder='Spent']").fill("20");
+await page.locator("#example-bill button", { hasText: "Add" }).click();
+tools.exampleBill = await page.locator("#example-bill .gallery-preview").innerText();
+report.push({ name: "tools", checks: tools });
+
+await context.close();
 await browser.close();
 writeFileSync(`${out}/report.json`, JSON.stringify(report, null, 2));
 console.log(JSON.stringify(report, null, 2));
