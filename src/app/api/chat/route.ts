@@ -1,6 +1,6 @@
 import librarySpec from "@/generated/spec.json";
 import { localPromptOptions, promptOptions } from "@/lib/prompt-options";
-import { generateSystemPrompt } from "@openuidev/lang-core";
+import { generateSystemPrompt } from "@openuidev/react-lang";
 import OpenAI from "openai";
 import type { ReasoningEffort } from "openai/resources/shared";
 import type { ResponseInputItem, Tool } from "openai/resources/responses/responses";

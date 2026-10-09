@@ -7,18 +7,19 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "deploy": "openui deploy"
+    "deploy": "openui deploy",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@openuidev/lang-core": "0.3.0",
-    "@openuidev/react-lang": "^0.3.0",
-    "@openuidev/react-ui": "^0.16.3",
+    "@openuidev/react-lang": "file:vendor/openui/openuidev-react-lang-0.3.1.tgz",
+    "@openuidev/react-ui": "file:vendor/openui/openuidev-react-ui-0.17.0.tgz",
+    "lucide-react": "^0.562.0",
     "maplibre-gl": "^6.13.0",
     "next": "^16.3.1",
     "openai": "^6.22.0",
     "react": "19.2.3",
     "react-dom": "19.2.3",
-    "zod": "3.25.76"
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@openuidev/cli": "0.4.1",
@@ -30,5 +31,11 @@
   "allowScripts": {
     "esbuild": true,
     "@openuidev/lang-core": false
+  },
+  "overrides": {
+    "@openuidev/lang-core": "file:vendor/openui/openuidev-lang-core-0.3.1.tgz",
+    "@openuidev/devtools": "file:vendor/openui/openuidev-devtools-0.2.2.tgz",
+    "@openuidev/observability": "file:vendor/openui/openuidev-observability-0.0.4.tgz",
+    "@openuidev/react-headless": "file:vendor/openui/openuidev-react-headless-0.17.0.tgz"
   }
 }
