@@ -50,7 +50,7 @@ export const Svg = defineComponent({
     const viewBox = ok(props.viewBox, /^\s*[-\d.]+(\s*[\s,]\s*[-\d.]+){3}\s*$/) ?? "0 0 100 100";
     // Without a width it fills the column, up to 1.5x the viewBox (at least 280px), so text stays in scale.
     const natural = Number(viewBox.trim().split(/[\s,]+/)[2]);
-    const maxWidth = props.width === undefined && natural > 0 ? `${Math.max(280, natural * 1.5)}px` : undefined;
+    const maxWidth = props.width == null && natural > 0 ? `${Math.max(280, natural * 1.5)}px` : undefined;
     return (
       <svg className="iui-svg" viewBox={viewBox} style={{ width: size(props.width) ?? "100%", maxWidth, height: size(props.height) }} role="img" preserveAspectRatio="xMidYMid meet">
         {renderNode(props.children)}

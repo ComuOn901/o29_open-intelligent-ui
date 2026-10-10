@@ -41,7 +41,7 @@ export const Box = defineComponent({
     const row = props.direction === "row";
     return (
       <div
-        className={cx("iui-box", row ? "iui-row" : "iui-col", !row && props.gap === undefined && "iui-flow")}
+        className={cx("iui-box", row ? "iui-row" : "iui-col", !row && props.gap == null && "iui-flow")}
         style={{
           ...flexStyle(props, !row),
           padding: space(props.padding),
@@ -52,7 +52,10 @@ export const Box = defineComponent({
           border: props.border ? "1px solid var(--iui-border)" : undefined,
           width: size(props.width),
           height: size(props.height),
-          flex: props.flex !== undefined ? `${Math.max(0, props.flex)} 1 0%` : undefined,
+          // null, like an omitted argument, means no flex.
+          flex: props.flex != null ? `${Math.max(0, props.flex)} 1 0%` : undefined,
+          // A width in px is meant: a Row with long text beside it must not squeeze it.
+          flexShrink: props.flex == null && typeof props.width === "number" ? 0 : undefined,
         }}
       >
         {renderNode(props.children)}
@@ -83,7 +86,7 @@ export const Col = defineComponent({
   props: z.object({ children, gap: z.number().optional(), align: align.optional() }),
   description: "Vertical layout. Without gap it spaces blocks like an article.",
   component: ({ props, renderNode }) => (
-    <div className={cx("iui-col", props.gap === undefined && "iui-flow")} style={flexStyle(props, true)}>
+    <div className={cx("iui-col", props.gap == null && "iui-flow")} style={flexStyle(props, true)}>
       {renderNode(props.children)}
     </div>
   ),
@@ -128,7 +131,7 @@ export const Card = defineComponent({
   description: "Panel with a border; soft is a filled panel for summaries.",
   component: ({ props, renderNode }) => (
     <section
-      className={cx("iui-card", props.variant === "soft" && "iui-card-soft", props.gap === undefined && "iui-flow")}
+      className={cx("iui-card", props.variant === "soft" && "iui-card-soft", props.gap == null && "iui-flow")}
       style={{ padding: space(props.padding), gap: space(props.gap) }}
     >
       {renderNode(props.children)}
