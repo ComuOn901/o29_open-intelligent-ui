@@ -12,7 +12,7 @@
 //
 // Options: --only id,id  --kind tool|dashboard  --out dir  --app url  --widths 390,1280
 //          --no-shots  --concurrency n  --temperature t  --max-tokens n
-import { createParser, BUILTINS, ACTION_STEPS } from "@openuidev/lang-core";
+import { createParser, ACTION_STEPS } from "@openuidev/lang-core";
 import { mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { createRequire } from "node:module";
 import path from "node:path";
@@ -66,13 +66,19 @@ const system = {
 const spec = JSON.parse(readFileSync(path.join(root, "src/generated/spec.json"), "utf8"));
 const parser = createParser(spec.schema, spec.root);
 const libraryFunctions = new Set(Object.keys(spec.functions ?? {}));
-const known = new Set([
-  ...Object.keys(BUILTINS),
-  ...Object.keys(ACTION_STEPS),
-  "Action",
-  ...libraryFunctions,
-  ...Object.keys(spec.actions ?? {}),
-]);
+const declared = new Set([...Object.keys(ACTION_STEPS), "Action", ...libraryFunctions, ...Object.keys(spec.actions ?? {})]);
+// lang-core 1.0 does not export its built-in list, so ask the parser whether it knows a name
+const probed = new Map();
+const known = {
+  has(name) {
+    if (declared.has(name)) return true;
+    if (!probed.has(name)) {
+      const r = parser.parse(`x = @${name}()\nroot = ${spec.root}([x])`);
+      probed.set(name, !r.meta.errors.some((e) => e.code === "unknown-function"));
+    }
+    return probed.get(name);
+  },
+};
 
 // ── Answers ──────────────────────────────────────────────────────────────────
 /** The program in a reply: the first fenced block if there is one, else the whole text. */
