@@ -17,6 +17,7 @@ import {
   Select,
   Slider,
   TextArea,
+  Timer,
 } from "./components/controls";
 import { HtmlView } from "./components/html-view";
 import { Box, Card, Col, Divider, Form, Grid, Row, Spacer } from "./components/layout";
@@ -37,7 +38,7 @@ export const library = createLibrary({
   components: [
     Col, Row, Box, Grid, Card, Divider, Spacer,
     Title, Text, Caption, Label, Badge, Link, List, ListItem, Markdown,
-    Button, IconButton, Pressable, Input, TextArea, Select, SegmentedControl, Slider, Checkbox, RadioGroup, DatePicker, Form,
+    Button, IconButton, Pressable, Input, TextArea, Select, SegmentedControl, Slider, Checkbox, RadioGroup, DatePicker, Timer, Form,
     Icon, Image, Table, Chart, MapView, MapMarker,
     ...svgComponents, HtmlView,
   ],
@@ -55,7 +56,7 @@ export const library = createLibrary({
     { name: "Text", components: ["Title", "Text", "Caption", "Label", "Badge", "Link", "List", "ListItem", "Markdown"] },
     {
       name: "Inputs",
-      components: ["Button", "IconButton", "Pressable", "Input", "TextArea", "Select", "SegmentedControl", "Slider", "Checkbox", "RadioGroup", "DatePicker", "Form"],
+      components: ["Button", "IconButton", "Pressable", "Input", "TextArea", "Select", "SegmentedControl", "Slider", "Checkbox", "RadioGroup", "DatePicker", "Timer", "Form"],
       notes: ["- An input's first argument is its value, usually a $variable that other statements read."],
     },
     { name: "Media and data", components: ["Icon", "Image", "Table", "Chart", "Map", "MapMarker"] },

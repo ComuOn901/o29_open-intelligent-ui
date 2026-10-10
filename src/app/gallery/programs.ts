@@ -231,6 +231,23 @@ m4 = MapMarker("Golden Gate Bridge", 37.8199, -122.4783, "Views", "🌉")`,
     code: `root = Card([Title("Take a little break", "md"), Text("Catch the dot as many times as you can in 15 seconds.", "sm", "muted"), HtmlView(${JSON.stringify(game)}, null, "Catch the dot")])`,
   },
   {
+    id: "timer",
+    title: "Timer",
+    note: "Timer($left) counts the bound seconds down; preset buttons @Set it, and a statement reacts when $left reaches 0.",
+    code: `root = Card([Title("Steep your tea", "md"), presets, Timer($left, "Time left"), done])
+$left = 180
+presets = Row([Button("Green · 2 min", @Set($left, 120), "outline", null, "sm"), Button("Black · 4 min", @Set($left, 240), "outline", null, "sm"), Button("Herbal · 6 min", @Set($left, 360), "outline", null, "sm")], 2, null, null, true)
+done = $left == 0 ? Text("**Ready.** Take the leaves out now.", "sm", "success") : Caption("Start the timer when the water reaches the leaves.")`,
+  },
+  {
+    id: "heatmap",
+    title: "Color scale",
+    note: "@MixColor turns a value into a color between two hex colors, for heatmaps and tints.",
+    code: `root = Card([Title("When the café is busiest", "md"), Caption("Average customers per hour, last 4 weeks"), Grid(@Each(days, "d", Caption(d)), 7, null, 1), Grid(@Each(visits, "v", Box([Text(v + "", "xs", null, "medium", false, false, true)], null, null, 1, @MixColor("#EEF6FF", "#0068BC", v / 60), "sm", null, null, 32, null, "center", "center")), 7, null, 1), Row([Caption("Quiet"), Row(@Each([0, 0.25, 0.5, 0.75, 1], "t", Box([], null, null, null, @MixColor("#EEF6FF", "#0068BC", t), "sm", null, 20, 10)), 1), Caption("Busy")], 2)])
+days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+visits = [12, 14, 13, 15, 18, 34, 30, 28, 30, 29, 31, 36, 52, 47, 41, 44, 40, 45, 50, 58, 49, 22, 24, 23, 27, 38, 44, 35]`,
+  },
+  {
     id: "icons",
     title: "Icons",
     note: "Lucide names at each size and in a few colors. An unknown name renders nothing.",

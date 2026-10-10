@@ -1,3 +1,4 @@
+import { colorFunctions } from "./colors";
 import { dataFunctions } from "./data";
 import { dateFunctions } from "./dates";
 import { listFunctions } from "./lists";
@@ -10,4 +11,4 @@ import { textFunctions } from "./text";
  * shape Query rows for charts. They are pure except @Random, @Pick, @Shuffle
  * and @Now. Bad arguments, or a throw, make a call evaluate to null.
  */
-export const functions = [...listFunctions, ...numberFunctions, ...textFunctions, ...dateFunctions, ...dataFunctions];
+export const functions = [...listFunctions, ...numberFunctions, ...textFunctions, ...colorFunctions, ...dateFunctions, ...dataFunctions];

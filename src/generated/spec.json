@@ -109,6 +109,10 @@
       "signature": "DatePicker(value: $binding<string>, label?: string, min?: string, max?: string)",
       "description": "Dates are \"YYYY-MM-DD\"."
     },
+    "Timer": {
+      "signature": "Timer(seconds: $binding<number>, label?: string)",
+      "description": "Countdown with start, pause and reset. It counts the bound seconds down to 0, so other statements can react, e.g. $left == 0."
+    },
     "Form": {
       "signature": "Form(children: Node[])",
       "description": "Groups fields; their values go with any @ToAssistant inside."
@@ -227,6 +231,7 @@
         "Checkbox",
         "RadioGroup",
         "DatePicker",
+        "Timer",
         "Form"
       ],
       "notes": [
@@ -354,6 +359,10 @@
       "signature": "Lerp(a: number, b: number, t: number) → number",
       "description": "The value a fraction t of the way from a to b"
     },
+    "Allocate": {
+      "signature": "Allocate(total: number, weights: number[], decimals?: number) → number[]",
+      "description": "Splits total in proportion to weights, rounded to decimals (default 2), so the parts add up to exactly total, e.g. @Allocate(100, [1, 1, 1]) is [33.34, 33.33, 33.33]"
+    },
     "Format": {
       "signature": "Format(value: number, kind?: \"number\" | \"currency\" | \"percent\" | \"compact\", decimals?: number, currency?: string) → string",
       "description": "Number as text: \"number\" 12,345.6, \"currency\" $12,345.68 (currency is a code like \"EUR\"), \"percent\" 45 -> 45%, \"compact\" 1.2M ($1.2M with a currency)"
@@ -377,6 +386,10 @@
     "Lower": {
       "signature": "Lower(text: string) → string",
       "description": "Text in lower case"
+    },
+    "MixColor": {
+      "signature": "MixColor(from: string, to: string, t: number) → string",
+      "description": "The hex color a fraction t of the way from one hex color to another, e.g. @MixColor(\"#ffffff\", \"#0285ff\", 0.5) for a heatmap or a tint"
     },
     "Now": {
       "signature": "Now() → string",
@@ -526,6 +539,9 @@
       "DatePicker": {
         "$ref": "#/$defs/DatePicker"
       },
+      "Timer": {
+        "$ref": "#/$defs/Timer"
+      },
       "Form": {
         "$ref": "#/$defs/Form"
       },
@@ -609,6 +625,7 @@
       "Checkbox",
       "RadioGroup",
       "DatePicker",
+      "Timer",
       "Form",
       "Icon",
       "Image",
@@ -1504,6 +1521,22 @@
         ],
         "additionalProperties": false,
         "description": "Dates are \"YYYY-MM-DD\"."
+      },
+      "Timer": {
+        "type": "object",
+        "properties": {
+          "seconds": {
+            "type": "number"
+          },
+          "label": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "seconds"
+        ],
+        "additionalProperties": false,
+        "description": "Countdown with start, pause and reset. It counts the bound seconds down to 0, so other statements can react, e.g. $left == 0."
       },
       "Form": {
         "type": "object",
@@ -2591,6 +2624,37 @@
           "type": "number"
         }
       },
+      "Allocate": {
+        "description": "Splits total in proportion to weights, rounded to decimals (default 2), so the parts add up to exactly total, e.g. @Allocate(100, [1, 1, 1]) is [33.34, 33.33, 33.33]",
+        "params": {
+          "type": "object",
+          "properties": {
+            "total": {
+              "type": "number"
+            },
+            "weights": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              }
+            },
+            "decimals": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "total",
+            "weights"
+          ],
+          "additionalProperties": false
+        },
+        "returns": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          }
+        }
+      },
       "Format": {
         "description": "Number as text: \"number\" 12,345.6, \"currency\" $12,345.68 (currency is a code like \"EUR\"), \"percent\" 45 -> 45%, \"compact\" 1.2M ($1.2M with a currency)",
         "params": {
@@ -2731,6 +2795,32 @@
           },
           "required": [
             "text"
+          ],
+          "additionalProperties": false
+        },
+        "returns": {
+          "type": "string"
+        }
+      },
+      "MixColor": {
+        "description": "The hex color a fraction t of the way from one hex color to another, e.g. @MixColor(\"#ffffff\", \"#0285ff\", 0.5) for a heatmap or a tint",
+        "params": {
+          "type": "object",
+          "properties": {
+            "from": {
+              "type": "string"
+            },
+            "to": {
+              "type": "string"
+            },
+            "t": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "from",
+            "to",
+            "t"
           ],
           "additionalProperties": false
         },

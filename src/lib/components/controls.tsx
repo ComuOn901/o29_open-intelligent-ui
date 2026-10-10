@@ -9,7 +9,7 @@ import {
   useStateField,
   useTriggerAction,
 } from "@openuidev/react-lang";
-import { useId, useRef, useState, type KeyboardEvent, type MouseEvent, type ReactNode } from "react";
+import { useEffect, useId, useRef, useState, type KeyboardEvent, type MouseEvent, type ReactNode } from "react";
 import { z } from "zod/v4";
 import { Glyph } from "./glyph";
 import { bg, children, color, onColor, cx, option, radius, radiusSchema, space, textOf, toOption, type Option } from "./style";
@@ -420,6 +420,75 @@ export const DatePicker = defineComponent({
           onChange={(event) => field.setValue(event.target.value)}
         />
       </Field>
+    );
+  },
+});
+
+const clock = (seconds: number) => {
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  const s = seconds % 60;
+  const mm = h ? String(m).padStart(2, "0") : String(m);
+  return `${h ? `${h}:` : ""}${mm}:${String(s).padStart(2, "0")}`;
+};
+
+export const Timer = defineComponent({
+  name: "Timer",
+  props: z.object({
+    seconds: reactive(z.number()),
+    label: z.string().optional(),
+  }),
+  description: "Countdown with start, pause and reset. It counts the bound seconds down to 0, so other statements can react, e.g. $left == 0.",
+  component: function TimerView({ props, statementId }) {
+    const field = useStateField(useFieldName(props.label, statementId), props.seconds);
+    const streaming = useIsStreaming();
+    const raw = typeof field.value === "number" ? field.value : Number(field.value);
+    const left = Number.isFinite(raw) ? Math.max(0, Math.floor(raw)) : 0;
+    const [running, setRunning] = useState(false);
+    // The ticking interval reads the latest value and setter, not the ones from when it started
+    const live = useRef({ left, setValue: field.setValue });
+    live.current = { left, setValue: field.setValue };
+    // What Reset goes back to: the value when the countdown first started
+    const [startedAt, setStartedAt] = useState<number | null>(null);
+
+    useEffect(() => {
+      if (!running) return;
+      const id = setInterval(() => {
+        const next = Math.max(0, live.current.left - 1);
+        live.current.left = next;
+        live.current.setValue(next);
+        if (next === 0) setRunning(false);
+      }, 1000);
+      return () => clearInterval(id);
+    }, [running]);
+
+    const toggle = () => {
+      if (!running && startedAt === null) setStartedAt(left);
+      setRunning(!running);
+    };
+    const reset = () => {
+      setRunning(false);
+      if (startedAt !== null) field.setValue(startedAt);
+      setStartedAt(null);
+    };
+    const done = left === 0 && startedAt !== null;
+    return (
+      <div className={cx("iui-timer", running && "is-running", done && "is-done")} role="timer" aria-label={props.label || "Timer"}>
+        <div className="iui-timer-read">
+          {props.label && <span className="iui-label">{props.label}</span>}
+          <span className="iui-timer-time">{clock(left)}</span>
+        </div>
+        <div className="iui-timer-actions">
+          <button type="button" className="iui-button iui-button-solid iui-button-sm" disabled={streaming || left === 0} onClick={toggle}>
+            <Glyph name={running ? "pause" : "play"} size={14} />
+            {running ? "Pause" : startedAt === null || left === 0 ? "Start" : "Resume"}
+          </button>
+          <button type="button" className="iui-button iui-button-ghost iui-button-sm" disabled={streaming || startedAt === null} onClick={reset}>
+            <Glyph name="rotate-ccw" size={14} />
+            Reset
+          </button>
+        </div>
+      </div>
     );
   },
 });

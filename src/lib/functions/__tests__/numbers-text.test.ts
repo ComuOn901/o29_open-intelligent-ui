@@ -36,6 +36,20 @@ const cases: Record<string, [string, unknown][]> = {
     ["@Lerp(10, 0, 1)", 0],
     ["@Lerp(0, 10)", null],
   ],
+  Allocate: [
+    ["@Allocate(100, [1, 1, 1])", [33.34, 33.33, 33.33]],
+    ["@Allocate(10, [1, 2, 1])", [2.5, 5, 2.5]],
+    ["@Allocate(-1, [1, 1, 1])", [-0.34, -0.33, -0.33]],
+    ["@Allocate(7, [1, 1], 0)", [4, 3]],
+    ["@Allocate(5, [0, 0])", null],
+    ["@Allocate(5, [1, -1])", null],
+  ],
+  MixColor: [
+    ['@MixColor("#ffffff", "#000000", 0.5)', "#808080"],
+    ['@MixColor("#fff", "#0285ff", 1)', "#0285ff"],
+    ['@MixColor("#ff0000", "#0000ff", 2)', "#0000ff"],
+    ['@MixColor("red", "#000000", 0.5)', null],
+  ],
   Format: [
     ["@Format(12345.678)", "12,345.68"],
     ['@Format(12345.6, "number")', "12,345.6"],

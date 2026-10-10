@@ -60,6 +60,7 @@ Slider(value: $binding<number>, min: number, max: number, step?: number, label?:
 Checkbox(checked: $binding<boolean>, label: string, lineThrough?: boolean) — lineThrough strikes the label when checked, for to-do lists.
 RadioGroup(value: $binding<string>, options: (string | {value: string, label: string})[], label?: string, direction?: "col" | "row")
 DatePicker(value: $binding<string>, label?: string, min?: string, max?: string) — Dates are "YYYY-MM-DD".
+Timer(seconds: $binding<number>, label?: string) — Countdown with start, pause and reset. It counts the bound seconds down to 0, so other statements can react, e.g. $left == 0.
 Form(children: Node[]) — Groups fields; their values go with any @ToAssistant inside.
 - An input's first argument is its value, usually a $variable that other statements read.
 
@@ -126,12 +127,14 @@ Use @-prefixed built-in functions (@Count, @Sum, @Avg, @Min, @Max, @Round) on Qu
 @Clamp(number: number, min: number, max: number) → number — number kept between min and max
 @Percent(part: number, total: number) → number — part / total * 100, e.g. @Percent(3, 4) is 75; 0 when total is 0
 @Lerp(a: number, b: number, t: number) → number — The value a fraction t of the way from a to b
+@Allocate(total: number, weights: number[], decimals?: number) → number[] — Splits total in proportion to weights, rounded to decimals (default 2), so the parts add up to exactly total, e.g. @Allocate(100, [1, 1, 1]) is [33.34, 33.33, 33.33]
 @Format(value: number, kind?: "number" | "currency" | "percent" | "compact", decimals?: number, currency?: string) → string — Number as text: "number" 12,345.6, "currency" $12,345.68 (currency is a code like "EUR"), "percent" 45 -> 45%, "compact" 1.2M ($1.2M with a currency)
 @Join(list: any[], sep?: string, field?: string) → string — Joins the items (or their field) into text with sep (default ", "), skipping nulls
 @Plural(n: number, word: string, plural?: string) → string — Count and word: @Plural(1, "guest") is "1 guest", 3 gives "3 guests"; plural defaults to word + "s"
 @Pad(value: string | number, length: number, char?: string) → string — Pads the start of value to length with char (default "0"), e.g. 7 -> "07"
 @Upper(text: string) → string — Text in upper case
 @Lower(text: string) → string — Text in lower case
+@MixColor(from: string, to: string, t: number) → string — The hex color a fraction t of the way from one hex color to another, e.g. @MixColor("#ffffff", "#0285ff", 0.5) for a heatmap or a tint
 @Now() → string — The current date and time as an ISO string
 @FormatDate(date: string | number, style?: "date" | "short" | "long" | "weekday" | "month" | "time" | "datetime" | "iso") → string — A date as text: "date" Oct 9, 2026 (default), "short" Oct 9, "long" Friday, October 9, 2026, "weekday" Fri, "month" Oct 2026, "time" 9:30 PM, "datetime", "iso" 2026-10-09. Dates are "YYYY-MM-DD", ISO or a timestamp
 @AddDays(date: string | number, days: number) → string — The date days later (negative: earlier), as "YYYY-MM-DD"
