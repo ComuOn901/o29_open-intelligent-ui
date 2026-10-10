@@ -16,11 +16,20 @@ export function read(item: unknown, field: string): unknown {
   return cur;
 }
 
-/** Strict equality, except a number and its string form match (ids from inputs are often strings). */
+/**
+ * Equality by value: lists and objects compare item by item, and a number
+ * matches its string form (ids from inputs are often strings).
+ */
 export function same(a: unknown, b: unknown): boolean {
   if (a === b) return true;
   const mixed = (typeof a === "number" && typeof b === "string") || (typeof a === "string" && typeof b === "number");
-  return mixed && String(a) === String(b);
+  if (mixed) return String(a) === String(b);
+  if (a === null || b === null || typeof a !== "object" || typeof b !== "object") return false;
+  if (Array.isArray(a) !== Array.isArray(b)) return false;
+  if (Array.isArray(a)) return a.length === (b as unknown[]).length && a.every((x, i) => same(x, (b as unknown[])[i]));
+  const ka = Object.keys(a);
+  const kb = Object.keys(b);
+  return ka.length === kb.length && ka.every((k) => Object.hasOwn(b, k) && same((a as Record<string, unknown>)[k], (b as Record<string, unknown>)[k]));
 }
 
 /** A finite number or a thrown error, which the runtime turns into null. */

@@ -271,10 +271,6 @@
       "signature": "Append(list: any[], item: any) → any[]",
       "description": "Copy of the list with item added at the end"
     },
-    "Prepend": {
-      "signature": "Prepend(list: any[], item: any) → any[]",
-      "description": "Copy of the list with item added at the start"
-    },
     "Concat": {
       "signature": "Concat(list: any[], more: any[]) → any[]",
       "description": "Joins two lists"
@@ -319,10 +315,6 @@
       "signature": "Unique(list: any[]) → any[]",
       "description": "Distinct items in first-seen order"
     },
-    "Reverse": {
-      "signature": "Reverse(list: any[]) → any[]",
-      "description": "Copy in reverse order"
-    },
     "Range": {
       "signature": "Range(start: number, end: number, step?: number) → number[]",
       "description": "Numbers from start up to end (not included) by step (default 1), e.g. @Range(0, 3) is [0, 1, 2]"
@@ -355,10 +347,6 @@
       "signature": "Percent(part: number, total: number) → number",
       "description": "part / total * 100, e.g. @Percent(3, 4) is 75; 0 when total is 0"
     },
-    "Lerp": {
-      "signature": "Lerp(a: number, b: number, t: number) → number",
-      "description": "The value a fraction t of the way from a to b"
-    },
     "Allocate": {
       "signature": "Allocate(total: number, weights: number[], decimals?: number) → number[]",
       "description": "Splits total in proportion to weights, rounded to decimals (default 2), so the parts add up to exactly total, e.g. @Allocate(100, [1, 1, 1]) is [33.34, 33.33, 33.33]"
@@ -378,14 +366,6 @@
     "Pad": {
       "signature": "Pad(value: string | number, length: number, char?: string) → string",
       "description": "Pads the start of value to length with char (default \"0\"), e.g. 7 -> \"07\""
-    },
-    "Upper": {
-      "signature": "Upper(text: string) → string",
-      "description": "Text in upper case"
-    },
-    "Lower": {
-      "signature": "Lower(text: string) → string",
-      "description": "Text in lower case"
     },
     "MixColor": {
       "signature": "MixColor(from: string, to: string, t: number) → string",
@@ -2106,28 +2086,6 @@
           "items": {}
         }
       },
-      "Prepend": {
-        "description": "Copy of the list with item added at the start",
-        "params": {
-          "type": "object",
-          "properties": {
-            "list": {
-              "type": "array",
-              "items": {}
-            },
-            "item": {}
-          },
-          "required": [
-            "list",
-            "item"
-          ],
-          "additionalProperties": false
-        },
-        "returns": {
-          "type": "array",
-          "items": {}
-        }
-      },
       "Concat": {
         "description": "Joins two lists",
         "params": {
@@ -2400,26 +2358,6 @@
           "items": {}
         }
       },
-      "Reverse": {
-        "description": "Copy in reverse order",
-        "params": {
-          "type": "object",
-          "properties": {
-            "list": {
-              "type": "array",
-              "items": {}
-            }
-          },
-          "required": [
-            "list"
-          ],
-          "additionalProperties": false
-        },
-        "returns": {
-          "type": "array",
-          "items": {}
-        }
-      },
       "Range": {
         "description": "Numbers from start up to end (not included) by step (default 1), e.g. @Range(0, 3) is [0, 1, 2]",
         "params": {
@@ -2598,32 +2536,6 @@
           "type": "number"
         }
       },
-      "Lerp": {
-        "description": "The value a fraction t of the way from a to b",
-        "params": {
-          "type": "object",
-          "properties": {
-            "a": {
-              "type": "number"
-            },
-            "b": {
-              "type": "number"
-            },
-            "t": {
-              "type": "number"
-            }
-          },
-          "required": [
-            "a",
-            "b",
-            "t"
-          ],
-          "additionalProperties": false
-        },
-        "returns": {
-          "type": "number"
-        }
-      },
       "Allocate": {
         "description": "Splits total in proportion to weights, rounded to decimals (default 2), so the parts add up to exactly total, e.g. @Allocate(100, [1, 1, 1]) is [33.34, 33.33, 33.33]",
         "params": {
@@ -2759,42 +2671,6 @@
           "required": [
             "value",
             "length"
-          ],
-          "additionalProperties": false
-        },
-        "returns": {
-          "type": "string"
-        }
-      },
-      "Upper": {
-        "description": "Text in upper case",
-        "params": {
-          "type": "object",
-          "properties": {
-            "text": {
-              "type": "string"
-            }
-          },
-          "required": [
-            "text"
-          ],
-          "additionalProperties": false
-        },
-        "returns": {
-          "type": "string"
-        }
-      },
-      "Lower": {
-        "description": "Text in lower case",
-        "params": {
-          "type": "object",
-          "properties": {
-            "text": {
-              "type": "string"
-            }
-          },
-          "required": [
-            "text"
           ],
           "additionalProperties": false
         },

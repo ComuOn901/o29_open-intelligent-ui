@@ -80,20 +80,4 @@ export const Pad = defineFunction({
   fn: ({ value, length, char = "0" }) => String(value).padStart(Math.min(Math.trunc(length), 1000), char || "0"),
 });
 
-export const Upper = defineFunction({
-  name: "Upper",
-  description: "Text in upper case",
-  params: z.object({ text: z.string() }),
-  returns: z.string(),
-  fn: ({ text }) => text.toUpperCase(),
-});
-
-export const Lower = defineFunction({
-  name: "Lower",
-  description: "Text in lower case",
-  params: z.object({ text: z.string() }),
-  returns: z.string(),
-  fn: ({ text }) => text.toLowerCase(),
-});
-
-export const textFunctions = [Format, Join, Plural, Pad, Upper, Lower];
+export const textFunctions = [Format, Join, Plural, Pad];

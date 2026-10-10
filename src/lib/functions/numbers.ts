@@ -50,14 +50,6 @@ export const Percent = defineFunction({
   fn: ({ part, total }) => (total === 0 ? 0 : finite((part / total) * 100)),
 });
 
-export const Lerp = defineFunction({
-  name: "Lerp",
-  description: "The value a fraction t of the way from a to b",
-  params: z.object({ a: z.number(), b: z.number(), t: z.number() }),
-  returns: z.number(),
-  fn: ({ a, b, t }) => finite(a + (b - a) * t),
-});
-
 export const Allocate = defineFunction({
   name: "Allocate",
   description: "Splits total in proportion to weights, rounded to decimals (default 2), so the parts add up to exactly total, e.g. @Allocate(100, [1, 1, 1]) is [33.34, 33.33, 33.33]",
@@ -82,4 +74,4 @@ export const Allocate = defineFunction({
   },
 });
 
-export const numberFunctions = [Pow, Sqrt, Random, Clamp, Percent, Lerp, Allocate];
+export const numberFunctions = [Pow, Sqrt, Random, Clamp, Percent, Allocate];

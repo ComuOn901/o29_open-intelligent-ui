@@ -31,11 +31,6 @@ const cases: Record<string, [string, unknown][]> = {
     ["@Percent(-1, 4)", -25],
     ["@Percent(1, null)", null],
   ],
-  Lerp: [
-    ["@Lerp(0, 10, 0.25)", 2.5],
-    ["@Lerp(10, 0, 1)", 0],
-    ["@Lerp(0, 10)", null],
-  ],
   Allocate: [
     ["@Allocate(100, [1, 1, 1])", [33.34, 33.33, 33.33]],
     ["@Allocate(10, [1, 2, 1])", [2.5, 5, 2.5]],
@@ -88,15 +83,6 @@ const cases: Record<string, [string, unknown][]> = {
     ['@Pad("5", 3, " ")', "  5"],
     ["@Pad(123, 2)", "123"],
     ["@Pad(7)", null],
-  ],
-  Upper: [
-    ['@Upper("abc")', "ABC"],
-    ['@Upper("")', ""],
-    ["@Upper(5)", null],
-  ],
-  Lower: [
-    ['@Lower("AbC")', "abc"],
-    ["@Lower(null)", null],
   ],
 };
 

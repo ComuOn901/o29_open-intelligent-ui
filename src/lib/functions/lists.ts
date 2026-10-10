@@ -12,14 +12,6 @@ export const Append = defineFunction({
   fn: ({ list, item }) => [...list, item],
 });
 
-export const Prepend = defineFunction({
-  name: "Prepend",
-  description: "Copy of the list with item added at the start",
-  params: z.object({ list: list(), item: z.any() }),
-  returns: list(),
-  fn: ({ list, item }) => [item, ...list],
-});
-
 export const Concat = defineFunction({
   name: "Concat",
   description: "Joins two lists",
@@ -131,14 +123,6 @@ export const Unique = defineFunction({
   },
 });
 
-export const Reverse = defineFunction({
-  name: "Reverse",
-  description: "Copy in reverse order",
-  params: z.object({ list: list() }),
-  returns: list(),
-  fn: ({ list }) => [...list].reverse(),
-});
-
 export const Range = defineFunction({
   name: "Range",
   description: "Numbers from start up to end (not included) by step (default 1), e.g. @Range(0, 3) is [0, 1, 2]",
@@ -178,6 +162,6 @@ export const Shuffle = defineFunction({
 });
 
 export const listFunctions = [
-  Append, Prepend, Concat, Remove, RemoveAt, Update, Toggle, Includes, Find, IndexOf,
-  Take, Slice, Unique, Reverse, Range, Pick, Shuffle,
+  Append, Concat, Remove, RemoveAt, Update, Toggle, Includes, Find, IndexOf,
+  Take, Slice, Unique, Range, Pick, Shuffle,
 ];

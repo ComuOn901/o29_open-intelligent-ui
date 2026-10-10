@@ -11,11 +11,6 @@ const cases: Record<string, [string, unknown][]> = {
     ["@Append(null, 1)", null],
     ['@Append("x", 1)', null],
   ],
-  Prepend: [
-    ["@Prepend([2, 3], 1)", [1, 2, 3]],
-    ['@Prepend([], "a")', ["a"]],
-    ["@Prepend(5, 1)", null],
-  ],
   Concat: [
     ["@Concat([1], [2, 3])", [1, 2, 3]],
     ["@Concat([], [])", []],
@@ -70,6 +65,7 @@ const cases: Record<string, [string, unknown][]> = {
     ['@IndexOf(["a", "b"], "b")', 1],
     ['@IndexOf(["a", "b"], "z")', -1],
     ["@IndexOf([], 1)", -1],
+    ['@IndexOf([{a: 1, b: [2]}, {a: 2}], {b: [2], a: 1})', 0],
   ],
   Take: [
     ["@Take([1, 2, 3], 2)", [1, 2]],
@@ -87,10 +83,6 @@ const cases: Record<string, [string, unknown][]> = {
     ['@Unique([1, 1, 2, "a", "a"])', [1, 2, "a"]],
     ["@Unique([{a: 1}, {a: 1}, {a: 2}])", [{ a: 1 }, { a: 2 }]],
     ["@Unique([])", []],
-  ],
-  Reverse: [
-    ["@Reverse([1, 2, 3])", [3, 2, 1]],
-    ["@Reverse([])", []],
   ],
   Range: [
     ["@Range(0, 3)", [0, 1, 2]],
