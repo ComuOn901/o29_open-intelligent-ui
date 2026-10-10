@@ -44,7 +44,7 @@ Open http://localhost:3000 and try: `I'm in San Francisco for a day, plan a sigh
 | Variable | Required | Purpose |
 | --- | --- | --- |
 | `THESYS_API_KEY` | Yes, unless using Ollama | OpenUI Gateway key, used only on the server. |
-| `THESYS_MODEL` | No | A `{provider}/{model}` id. Defaults to `openai/gpt-5.5`. |
+| `THESYS_MODEL` | No | A `{provider}/{model}` id. Defaults to `openai/gpt-6.1-sol`. |
 | `MODEL_PROVIDER` | No | Set to `ollama` to run a local model instead of Gateway; see [Run with a local model](#run-with-a-local-model-ollama). |
 | `OLLAMA_MODEL` | No | The Ollama model to use. Defaults to `qwen3.8:27b`. |
 | `OLLAMA_BASE_URL` | No | Ollama's OpenAI-compatible endpoint. Defaults to `http://localhost:11434/v1`. |

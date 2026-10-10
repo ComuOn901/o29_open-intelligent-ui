@@ -33,7 +33,7 @@ const backend = useOllama
     }
   : {
       name: "OpenUI Gateway",
-      model: process.env.THESYS_MODEL ?? "openai/gpt-5.5",
+      model: process.env.THESYS_MODEL ?? "openai/gpt-6.1-sol",
       instructions: generateSystemPrompt({
         cloud: true,
         library: librarySpec,
