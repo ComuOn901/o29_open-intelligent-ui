@@ -20,14 +20,14 @@ The model streams OpenUI Lang 1.0, and the app renders it with a library of prim
 
 - **Layout:** `Col`, `Row`, `Box` (background, radius, border, sizes, flex), `Grid`, `Card`, `Divider`, `Spacer`.
 - **Text:** `Title`, `Text` (inline **bold**, *italic*, `code`, links), `Caption`, `Label`, `Badge`, `Link`, `List` and `ListItem` (bullets, numbers, a timeline), `Markdown`.
-- **Inputs:** `Button`, `IconButton`, `Pressable`, `Input`, `TextArea`, `Select`, `SegmentedControl`, `Slider`, `Checkbox`, `RadioGroup`, `DatePicker`, `Form`. Each input's first argument is its value, usually a `$variable` other statements read.
+- **Inputs:** `Button`, `IconButton`, `Pressable`, `Input`, `TextArea`, `Select`, `SegmentedControl`, `Slider`, `Checkbox`, `RadioGroup`, `DatePicker`, `Timer` (a countdown), `Form`. Each input's first argument is its value, usually a `$variable` other statements read.
 - **Media and data:** `Icon` (lucide names), `Image` (searches Wikipedia when there is no `src` or it fails), `Table`, `Chart` (bar, line, area, pie, donut), and `Map` with `MapMarker` ([MapLibre GL](https://maplibre.org), category filter, expansion, a street route).
 - **Drawing:** `Svg` with `G`, `Circle`, `Ellipse`, `Rect`, `Line`, `Path`, `Polyline`, `Polygon` and `SvgText`, whose attributes take expressions so state can move them; `HtmlView` runs an HTML page (a game, a canvas) in a sandboxed iframe.
 
-- **Functions:** 43 generic `@functions` (`src/lib/functions/`) next to the 1.0 built-ins, so an answer can compute with its own state: lists (`@Append`, `@Remove`, `@Update`, `@Toggle`, `@Includes`, `@Range`, `@Shuffle`, ...), numbers (`@Pow`, `@Random`, `@Clamp`, `@Percent`), text (`@Format`, `@Join`, `@Plural`), dates (`@FormatDate`, `@AddDays`, `@DaysBetween`) and data for dashboards (`@GroupBy`, `@Pivot`, `@Top`, `@Between`, `@Bucket`, `@Cumulative`, `@MovingAvg`, `@Change`, `@Histogram`, `@Stats`). A bad argument makes a call evaluate to null, as in 1.0.
+- **Functions:** 45 generic `@functions` (`src/lib/functions/`) next to the 1.0 built-ins, so an answer can compute with its own state: lists (`@Append`, `@Remove`, `@Update`, `@Toggle`, `@Includes`, `@Range`, `@Shuffle`, ...), numbers (`@Pow`, `@Random`, `@Clamp`, `@Percent`, `@Allocate` for splits that add up to the cent), text (`@Format`, `@Join`, `@Plural`), colors (`@MixColor`), dates (`@FormatDate`, `@AddDays`, `@DaysBetween`) and data for dashboards (`@GroupBy`, `@Pivot`, `@Top`, `@Between`, `@Bucket`, `@Cumulative`, `@MovingAvg`, `@Change`, `@Histogram`, `@Stats`). A bad argument makes a call evaluate to null, as in 1.0.
 - **Actions:** `@CopyToClipboard(text)`, for copying a shopping list or a split.
 
-The dev-only page `/gallery` renders hand-written programs: working tools for six of the Intelligent UI examples (Sunday roast, split the bill, Monty Hall, retirement savings, GDP, the central limit theorem), two dashboards over demo data, the prompt's worked examples, and programs that exercise every component.
+The dev-only page `/gallery` renders hand-written programs: a working answer for each of the 16 Intelligent UI examples (from the 7-speed bike to the arcade game), two dashboards over demo data, the prompt's worked examples, and programs that exercise every component.
 
 ## Setup
 
@@ -66,7 +66,7 @@ We also have an [OpenWebUI plugin](https://github.com/thesysdev/openwebui-plugin
    ollama pull qwen3.8:27b
    ```
 
-2. Give the model a larger context window. The OpenUI prompt for this app is about 6,400 tokens, and Ollama's default window is 4,096, which silently cuts the prompt and produces broken output. Either start Ollama with a larger default:
+2. Give the model a larger context window. The OpenUI prompt for this app is about 6,500 tokens, and Ollama's default window is 4,096, which silently cuts the prompt and produces broken output. Either start Ollama with a larger default:
 
    ```bash
    OLLAMA_CONTEXT_LENGTH=32768 ollama serve
@@ -108,7 +108,7 @@ What changes with a local model:
 | `src/app/api/wiki/route.ts` | Wikipedia lookup: photos and coordinates for a place, cached on the server. |
 | `src/app/api/street-route/route.ts` | Street geometry between stops from OSRM, cached on the server. |
 | `src/app/api/image-search/route.ts` | Photo search for `Image`: Wikipedia lead images, then Wikimedia Commons, cached on the server. |
-| `src/app/gallery/` | The dev-only `/gallery` page and its OpenUI Lang programs; `tool-programs.ts` holds the working tools and dashboards. |
+| `src/app/gallery/` | The dev-only `/gallery` page and its OpenUI Lang programs; `tool-programs.ts` holds the 16 examples and the dashboards. |
 | `src/app/preview/` | A dev-only page that renders one program handed in by a script, for the benchmark's screenshots. |
 | `src/lib/library.ts` | The OpenUI component library: the primitives, their groups and prompt notes. |
 | `src/lib/functions/` | The library's `@functions` (`defineFunction`), with tests that run them through the 1.0 parser and evaluator. |
@@ -123,6 +123,19 @@ What changes with a local model:
 | `vendor/openui/` | The OpenUI 1.0 packages, packed from the release branch by `scripts/pack-openui.sh`. |
 | `docs/openui-chatgpt-comparison.mp4` | Side-by-side video of ChatGPT and this project; `docs/openui-chatgpt-comparison.jpg` is its README preview. |
 | `.env.example` | The environment variables to copy into `.env.local`. |
+
+## For designers
+
+`npm install && npm run dev`, then open http://localhost:3000/gallery. It needs no API key: every example and component renders from hand-written programs, with Light and Dark at the top right. Check phone width too.
+
+- **Components** are in `src/lib/components/` (`layout.tsx`, `text.tsx`, `markdown.tsx`, `controls.tsx`, `media.tsx`, `chart.tsx`, `table.tsx`, `svg.tsx`, `html-view.tsx`, `map/`), styled by `components.css` (`iui-*` classes).
+- **Tokens** (colors, type, radii, spacing) are in `src/lib/components/theme.css`, with the dark set under `[data-theme="dark"]`. The chat shell around answers is `src/app/shell.css` and `src/lib/response-theme.ts`.
+- **`/gallery`** is the design surface: "Working tools" holds the 16 examples and two dashboards, "Components" one program per component.
+
+How anything looks can change freely. What the model writes must keep working, so keep these as they are, or regenerate the prompt (`npm run generate && npm run prompt`) and tell whoever owns it:
+
+- component and `@function` names, the order of their arguments, and option values such as Button's `"solid" | "outline" | "soft" | "ghost"`;
+- the color names a model can use: `ink`, `muted`, `faint`, `surface`, `info`, `success`, `warning`, `danger`, `purple`, `pink`, `chart1` to `chart6`.
 
 ## Checks
 
