@@ -177,7 +177,7 @@ mode = $gear <= 2 ? "Easy, for climbing" : $gear <= 5 ? "Moderate, for cruising"
 explorer = Card([exHead, cogs, Slider($gear, 1, 7, 1, "Gear", null, [{value: 1, label: "1 · Easy"}, {value: 4, label: "4"}, {value: 7, label: "7 · Fast"}]), stats, Slider($rpm, 50, 110, 5, "Pedaling cadence", " rpm"), Text(feel, "sm"), Caption("Assumes a 40-tooth chainring, a 12-28 freewheel and a 700c wheel (2.1 m around). Real bikes vary.")], null, 4, 3)
 exHead = Row([Col([Label("Explore the seven gears"), Title("Gear " + $gear + " of 7", "xl")], 1), Spacer(), Badge(mode, $gear <= 2 ? "success" : $gear <= 5 ? "info" : "warning")], 3, null, null, true)
 cogs = Svg(@Each(@Range(0, 7), "i", G([Circle(26 + i * 45, 52, 6 + teeth[i] * 0.55, i == $gear - 1 ? "info" : "surface", i == $gear - 1 ? "info" : "faint", 2, i == $gear - 1 ? 0.85 : 1), Circle(26 + i * 45, 52, 4, "muted"), SvgText(teeth[i] + "T", 26 + i * 45, 104, 11, i == $gear - 1 ? "info" : "muted", "middle", i == $gear - 1 ? "semibold" : "normal")])), "0 0 320 112")
-stats = Grid([s1, s2, s3], 3, 110, 2)
+stats = Grid([s1, s2, s3], 3, 90, 2)
 s1 = Card([Caption("Rear sprocket"), Title(tooth + " teeth", "lg")], "soft", 3, 1)
 s2 = Card([Caption("Gear ratio"), Title(@Format(ratio, "number", 2) + " : 1", "lg")], "soft", 3, 1)
 s3 = Card([Caption("Speed at " + $rpm + " rpm"), Title(@Format(speed, "number", 1) + " km/h", "lg")], "soft", 3, 1)
