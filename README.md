@@ -4,19 +4,19 @@
 
 In ChatGPT's Intelligent UI, a request such as "plan a day in San Francisco" returns an interactive answer (a map, photographs and an editable itinerary) rather than text. This repository reproduces that experience with open-source components, so that the same kind of interface can be built, modified and shipped inside any application.
 
-[OpenUI](https://github.com/thesysdev/openui) is the open standard for Generative UI.
+[OpenUI](https://github.com/thesysdev/openui) is an open standard for Generative UI.
 
 > This project is independent and is not affiliated with or endorsed by OpenAI. "Intelligent UI" refers to the ChatGPT feature that this demo recreates.
 
 ## Demo video
 
-ChatGPT's Intelligent UI (left) and this project (right) answering the same request. Select the image to play the video.
+ChatGPT's Intelligent UI (left) and this project (right) answering the same request. The video is hosted separately: TODO(link).
 
-[![ChatGPT and OpenUI side by side, each showing a one-day San Francisco route with photos and a map](docs/openui-chatgpt-comparison.jpg)](docs/openui-chatgpt-comparison.mp4)
+![ChatGPT and OpenUI side by side, each showing a one-day San Francisco route with photos and a map](docs/openui-chatgpt-comparison.jpg)
 
 ## What's in the demo
 
-The model streams OpenUI Lang 1.0, and the app renders it with a library of primitives the model arranges itself: no layout is fixed in the components. The library (`src/lib/library.ts`, components in `src/lib/components/`) follows the Open Intelligent UI design in light and dark:
+The model streams OpenUI Lang 1.0, and the app renders it with a library of primitives the model arranges itself: no layout is fixed in the components. The library (`src/lib/library.ts`, components in `src/lib/components/`) follows the Open Intelligent UI design. The components have light and dark tokens, but only `/gallery` (and the benchmark's `/preview`) switch to dark; the chat is light only:
 
 - **Layout:** `Col`, `Row`, `Box` (background, radius, border, sizes, flex), `Grid`, `Card`, `Divider`, `Spacer`.
 - **Text:** `Title`, `Text` (inline **bold**, *italic*, `code`, links), `Caption`, `Label`, `Badge`, `Link`, `List` and `ListItem` (bullets, numbers, a timeline), `Markdown`.
@@ -53,13 +53,8 @@ Open http://localhost:3000 and try: `I'm in San Francisco for a day, plan a sigh
 
 The demo can also run on a local model through [Ollama](https://ollama.com), with no API key required.
 
-You can use **OpenUI / Open Intelligent UI** with any local LLM provider, including:
-- [Ollama](https://ollama.com)
-- [LM Studio](https://lmstudio.ai)
-- [Unsloth Studio](https://unsloth.ai)
-- [AnythingLLM](https://anythingllm.com)
+It works with any OpenAI-compatible local server (Ollama, LM Studio) via `OLLAMA_BASE_URL`.
 
-We also have an [OpenWebUI plugin](https://github.com/thesysdev/openwebui-plugin) that can be set up with Open Intelligent UI.
 1. Install Ollama and pull a model. The default is `qwen3.8:27b` (about 18 GB, best with 32 GB of memory or more); `gpt-oss:20b` and `qwen3:8b` are smaller alternatives.
 
    ```bash
@@ -94,7 +89,7 @@ What changes with a local model:
 - **Working tools.** The prompt options in `src/lib/prompt-options.ts` (rules and worked examples) teach the model to answer with a tool that works in the page: lists and inputs live in `$variables`, everything shown is computed from them with `@functions`, and buttons change them with `@Set`, instead of sending a form back to the assistant. `@Each` maps a list into rows, e.g. `@Each(@Range(0, $years + 1), "y", {year: y, balance: $p * @Pow(1 + $r / 100, y)})`.
 - **Photos.** `Image` loads its `src`; without one, or when it fails, it asks `/api/image-search`, which returns Wikipedia lead images and Wikimedia Commons files for the description.
 - **Map data.** Street geometry comes from `/api/street-route`, which validates input and caches results from the public OSRM demo server's driving profile: a road overview, not walking or transit directions. When it's unavailable, a labelled direct connection is drawn instead.
-- **Theme.** Colors, type, radii and spacing are tokens in `src/lib/components/theme.css`, with a dark set under `data-theme="dark"`. The chat shell keeps its `AgentInterface` theme from `src/lib/response-theme.ts`.
+- **Theme.** Colors, type, radii and spacing are tokens in `src/lib/components/theme.css`, with a dark set under `data-theme="dark"` that only `/gallery` and `/preview` use. The chat shell keeps its `AgentInterface` theme from `src/lib/response-theme.ts`.
 
 ## Project structure
 
@@ -105,7 +100,6 @@ What changes with a local model:
 | `src/app/globals.css` | Global CSS reset. |
 | `src/app/shell.css` | Restyles the `AgentInterface` shell (sidebar, composer, starters, message bubbles), using theme tokens where they exist. |
 | `src/app/api/chat/route.ts` | Chat endpoint. Validates the request, forwards the conversation to OpenUI Gateway with image search enabled (or to a local Ollama model when `OLLAMA_MODEL` is set), and streams the response back. |
-| `src/app/api/wiki/route.ts` | Wikipedia lookup: photos and coordinates for a place, cached on the server. |
 | `src/app/api/street-route/route.ts` | Street geometry between stops from OSRM, cached on the server. |
 | `src/app/api/image-search/route.ts` | Photo search for `Image`: Wikipedia lead images, then Wikimedia Commons, cached on the server. |
 | `src/app/gallery/` | The dev-only `/gallery` page and its OpenUI Lang programs; `tool-programs.ts` holds the 16 examples and the dashboards. |
@@ -121,7 +115,7 @@ What changes with a local model:
 | `src/generated/system-prompt.txt` | The full system prompt for the library; `dashboard-system-prompt.txt` adds the demo data tools. Regenerate with `npm run prompt`. |
 | `scripts/bench/` | The benchmark: 16 example prompts and 8 dashboard prompts, run against a model and checked; see [Benchmark](#benchmark). |
 | `vendor/openui/` | The OpenUI 1.0 packages, packed from the release branch by `scripts/pack-openui.sh`. |
-| `docs/openui-chatgpt-comparison.mp4` | Side-by-side video of ChatGPT and this project; `docs/openui-chatgpt-comparison.jpg` is its README preview. |
+| `docs/openui-chatgpt-comparison.jpg` | Still of the side-by-side ChatGPT and this project video (the video is hosted separately). |
 | `.env.example` | The environment variables to copy into `.env.local`. |
 
 ## For designers
@@ -146,7 +140,7 @@ npm run typecheck
 npm run build
 ```
 
-Then open `/gallery` (`npm run dev`), switch between light and dark, and try it at phone width. `scripts/gallery-shots.mjs` takes the same screenshots headlessly and checks console errors, overflow and the main interactions.
+Then open `/gallery` (`npm run dev`), switch between light and dark, and try it at phone width.
 
 ## Benchmark
 
