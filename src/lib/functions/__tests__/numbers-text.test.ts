@@ -41,7 +41,7 @@ const cases: Record<string, [string, unknown][]> = {
     ["@Allocate(10, [1, 2, 1])", [2.5, 5, 2.5]],
     ["@Allocate(-1, [1, 1, 1])", [-0.34, -0.33, -0.33]],
     ["@Allocate(7, [1, 1], 0)", [4, 3]],
-    ["@Allocate(5, [0, 0])", null],
+    ["@Allocate(5, [0, 0])", [0, 0]],
     ["@Allocate(5, [1, -1])", null],
   ],
   MixColor: [

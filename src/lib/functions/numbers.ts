@@ -65,7 +65,9 @@ export const Allocate = defineFunction({
   returns: z.array(z.number()),
   fn: ({ total, weights, decimals }) => {
     const sum = weights.reduce((a, b) => a + b, 0);
-    if (!weights.length || weights.some((w) => !Number.isFinite(w) || w < 0) || !(sum > 0)) throw new Error("weights must be zero or more, with a positive sum");
+    if (!weights.length || weights.some((w) => !Number.isFinite(w) || w < 0)) throw new Error("weights must be zero or more");
+    // All-zero weights (a day with nothing to split across) give all zeros
+    if (sum === 0) return weights.map(() => 0);
     // Whole units (cents for 2 decimals); the leftover units go to the largest remainders
     const scale = 10 ** Math.min(6, Math.max(0, Math.round(decimals ?? 2)));
     const units = Math.round(Math.abs(total) * scale);
