@@ -1,38 +1,63 @@
-import librarySpec from "@/generated/spec.json";
-import { localPromptOptions, promptOptions } from "@/lib/prompt-options";
-import { generateSystemPrompt } from "@openuidev/lang-core";
+import spec from "@/generated/spec.json";
+import { promptOptions } from "@/lib/prompt-options";
+import { generateSystemPrompt, type LibrarySpec } from "@openuidev/lang-core";
 import OpenAI from "openai";
 import type { ReasoningEffort } from "openai/resources/shared";
-import type { ResponseInputItem, Tool } from "openai/resources/responses/responses";
+import type { ChatCompletionChunk, ChatCompletionCreateParamsStreaming, ChatCompletionMessageParam } from "openai/resources/chat/completions";
+import type { ResponseInputItem } from "openai/resources/responses/responses";
 
-// Both backends speak the Responses protocol, so the stock OpenAI SDK works
-// against either and the browser stream is the same.
+// Two ways to reach a model, chosen by environment variables:
 //
-// OpenUI Gateway (default): cloud: true lets Gateway build the prompt from this
-// library spec and validate/correct the OpenUI Lang it streams back. Gateway
-// also runs image search itself; the model puts the image URLs into the
-// components (image_search is a Gateway extension to the SDK's tool union).
+// OpenUI Cloud (default, THESYS_API_KEY): the Responses API on OpenUI Gateway.
+// cloud: true sends this library's spec, so Gateway builds the prompt and
+// validates and corrects the OpenUI Lang it streams back.
 //
-// Ollama (MODEL_PROVIDER=ollama, or OLLAMA_MODEL set): a local model. The full
-// OpenUI prompt is built here, there is no image search (photos come from
-// Wikipedia), and the output is not corrected, so results depend on the model.
+// Direct (LLM_BASE_URL, or the Ollama shortcuts): any OpenAI-compatible Chat
+// Completions endpoint, such as OpenRouter, Ollama or LM Studio. The full
+// OpenUI 1.0 prompt is built here from the same spec and prompt options, and
+// the model's text is relayed as Responses events, so the browser stream is
+// the same for both. The output is not corrected.
+//
+// Neither gets an image search tool: Image finds its own photo for its query.
+
+// lang-core types schema.$defs as component schemas only, so the ActionExpression
+// def (an anyOf) in the generated spec needs a cast.
+const librarySpec = spec as unknown as LibrarySpec;
+
+// Low effort answers about five times sooner with the same quality of UI;
+// LLM_REASONING_EFFORT=default sends no effort at all (the model's own default).
+const effortSetting = process.env.LLM_REASONING_EFFORT ?? process.env.REASONING_EFFORT ?? "low";
+const effort = effortSetting === "default" || effortSetting === "" ? undefined : (effortSetting as ReasoningEffort);
+
 const useOllama = process.env.MODEL_PROVIDER === "ollama" || !!process.env.OLLAMA_MODEL;
-const backend = useOllama
+const direct = process.env.LLM_BASE_URL
+  ? { name: "LLM", baseURL: process.env.LLM_BASE_URL, apiKey: process.env.LLM_API_KEY, model: process.env.LLM_MODEL }
+  : useOllama
+    ? { name: "Ollama", baseURL: process.env.OLLAMA_BASE_URL ?? "http://localhost:11434/v1", apiKey: "ollama", model: process.env.OLLAMA_MODEL ?? "qwen3.8:27b" }
+    : null;
+
+const backend = direct
   ? {
-      name: "Ollama",
-      model: process.env.OLLAMA_MODEL ?? "qwen3.8:27b",
-      instructions: generateSystemPrompt({ library: librarySpec, promptOptions: localPromptOptions }),
-      tools: [] as Tool[],
-      connect: () => new OpenAI({ apiKey: "ollama", baseURL: process.env.OLLAMA_BASE_URL ?? "http://localhost:11434/v1" }),
-      missingConfig: undefined,
+      kind: "direct" as const,
+      name: direct.name,
+      model: direct.model ?? "",
+      instructions: generateSystemPrompt({ library: librarySpec, promptOptions }),
+      connect: () => new OpenAI({ apiKey: direct.apiKey ?? "none", baseURL: direct.baseURL }),
+      missingConfig: direct.model ? undefined : "LLM_MODEL is not set. Set it to the model id your LLM_BASE_URL serves.",
     }
   : {
+      kind: "cloud" as const,
       name: "OpenUI Gateway",
-      model: process.env.THESYS_MODEL ?? "openai/gpt-5.5",
-      instructions: generateSystemPrompt({ cloud: true, library: librarySpec, promptOptions }),
-      tools: [{ type: "image_search" } as unknown as Tool],
-      connect: () => new OpenAI({ apiKey: process.env.THESYS_API_KEY, baseURL: "https://api.thesys.dev/v1/embed" }),
-      missingConfig: process.env.THESYS_API_KEY ? undefined : "THESYS_API_KEY is not set. Add it to .env.local, or set MODEL_PROVIDER=ollama to use a local model.",
+      model: process.env.THESYS_MODEL ?? "openai/gpt-6.1-sol",
+      instructions: generateSystemPrompt({
+        cloud: true,
+        library: librarySpec,
+        promptOptions: { examples: promptOptions.examples, additionalRules: promptOptions.additionalRules },
+      }),
+      connect: () => new OpenAI({ apiKey: process.env.THESYS_API_KEY, baseURL: process.env.THESYS_BASE_URL ?? "https://api.thesys.dev/v1/embed" }),
+      missingConfig: process.env.THESYS_API_KEY
+        ? undefined
+        : "THESYS_API_KEY is not set. Add it to .env.local, or set LLM_BASE_URL, LLM_API_KEY and LLM_MODEL to use any OpenAI-compatible API.",
     };
 
 // Created on first request so the app builds without any keys set.
@@ -40,20 +65,6 @@ let client: OpenAI | undefined;
 
 const MAX_ITEMS = 60;
 const MAX_BODY_BYTES = 1_000_000;
-
-// AgentInterface saves component state (the user's map edits) at the end of the
-// answer as "]]>openui:context\n[{...}]". Rewrite it as a sentence the model reads.
-const CONTEXT_MARKER = "]]>openui:context";
-function describeRouteEdits(content: string): string {
-  const at = content.indexOf(CONTEXT_MARKER);
-  if (at < 0) return content;
-  let state: Record<string, { value?: unknown }> = {};
-  try { state = (JSON.parse(content.slice(at + CONTEXT_MARKER.length).trim()) as typeof state[])[0] ?? {}; } catch { return content.slice(0, at); }
-  const removed = Array.isArray(state.routeRemoved?.value) ? state.routeRemoved.value : [];
-  const added = Array.isArray(state.routeAdded?.value) ? state.routeAdded.value.map((stop: { name?: string; id?: string }) => stop?.name || stop?.id).filter(Boolean) : [];
-  const edits = [removed.length && `removed stops (by id): ${removed.join(", ")}`, added.length && `added stops: ${added.join(", ")}`].filter(Boolean);
-  return content.slice(0, at) + (edits.length ? `\n\n(User's edits to this route: ${edits.join("; ")}.)` : "");
-}
 
 // The browser sends the whole conversation each turn. Keep only user and
 // assistant text: earlier tool calls already ran on the backend, and
@@ -65,9 +76,33 @@ function toInput(messages: unknown): ResponseInputItem[] | null {
     const { role, content } = item as { role?: unknown; content?: unknown };
     if (role !== "user" && role !== "assistant") return [];
     if (typeof content !== "string" && !Array.isArray(content)) return [];
-    return [{ role, content: role === "assistant" && typeof content === "string" ? describeRouteEdits(content) : content } as ResponseInputItem];
+    return [{ role, content } as ResponseInputItem];
   });
   return items.length ? items.slice(-MAX_ITEMS) : null;
+}
+
+/** The conversation as Chat Completions messages (text only). */
+function toChatMessages(input: ResponseInputItem[]): ChatCompletionMessageParam[] {
+  return input.map((item) => {
+    const { role, content } = item as { role: "user" | "assistant"; content: unknown };
+    const text = typeof content === "string" ? content : Array.isArray(content) ? content.map((p) => (p as { text?: string }).text ?? "").join("") : "";
+    return { role, content: text };
+  });
+}
+
+/** A Chat Completions stream as the Responses events the browser adapter reads. */
+async function* asResponsesEvents(stream: AsyncIterable<ChatCompletionChunk>) {
+  const id = `msg_${Date.now()}`;
+  yield { type: "response.output_item.added", item: { id, type: "message", role: "assistant", content: [], status: "in_progress" }, output_index: 0 };
+  let text = "";
+  for await (const chunk of stream) {
+    const delta = chunk.choices?.[0]?.delta?.content;
+    if (!delta) continue;
+    text += delta;
+    yield { type: "response.output_text.delta", item_id: id, output_index: 0, content_index: 0, delta };
+  }
+  yield { type: "response.output_text.done", item_id: id, output_index: 0, content_index: 0, text };
+  yield { type: "response.completed" };
 }
 
 export async function POST(req: Request) {
@@ -88,23 +123,36 @@ export async function POST(req: Request) {
 
   if (backend.missingConfig) return Response.json({ error: { message: backend.missingConfig } }, { status: 500 });
 
-  let stream: AsyncIterable<unknown>;
+  let events: AsyncIterable<unknown>;
   try {
     client ??= backend.connect();
-    stream = await client.responses.create(
-      {
-        model: backend.model,
-        instructions: backend.instructions,
-        input,
-        ...(backend.tools.length ? { tools: backend.tools } : {}),
-        store: false,
-        ...(process.env.REASONING_EFFORT ? { reasoning: { effort: process.env.REASONING_EFFORT as ReasoningEffort } } : {}),
-        stream: true,
-      },
-      { signal: req.signal }, // propagate browser aborts
-    );
+    events =
+      backend.kind === "cloud"
+        ? await client.responses.create(
+            {
+              model: backend.model,
+              instructions: backend.instructions,
+              input,
+              store: false,
+              ...(effort ? { reasoning: { effort } } : {}),
+              stream: true,
+            },
+            { signal: req.signal }, // propagate browser aborts
+          )
+        : asResponsesEvents(
+            await client.chat.completions.create(
+              {
+                model: backend.model,
+                messages: [{ role: "system", content: backend.instructions }, ...toChatMessages(input)],
+                stream: true,
+                // OpenRouter reads reasoning.effort; OpenAI-style servers read reasoning_effort.
+                ...(effort ? { reasoning_effort: effort, reasoning: { effort } } : {}),
+              } as ChatCompletionCreateParamsStreaming,
+              { signal: req.signal },
+            ),
+          );
   } catch (err) {
-    // Surface upstream failures (bad key, unknown model, Ollama not running) as an HTTP error.
+    // Surface upstream failures (bad key, unknown model, server not running) as an HTTP error.
     const e = err as { status?: number; message?: string };
     console.error(err);
     return Response.json({ error: { message: `${backend.name}: ${e.message ?? "upstream error"}` } }, { status: e.status ?? 502 });
@@ -115,7 +163,7 @@ export async function POST(req: Request) {
   const body = new ReadableStream<Uint8Array>({
     async start(controller) {
       try {
-        for await (const event of stream) controller.enqueue(encoder.encode(`data: ${JSON.stringify(event)}\n\n`));
+        for await (const event of events) controller.enqueue(encoder.encode(`data: ${JSON.stringify(event)}\n\n`));
       } catch (err) {
         const message = err instanceof Error ? err.message : String(err);
         controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: "error", message })}\n\n`));

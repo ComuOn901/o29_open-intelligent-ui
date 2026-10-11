@@ -1,6 +1,6 @@
 import type { LngLatBoundsLike } from "maplibre-gl";
 
-/** [lat, lng] — MapLibre itself takes [lng, lat]; convert with `lngLat`. */
+/** [lat, lng]. MapLibre itself takes [lng, lat]; convert with `lngLat`. */
 export type LatLng = [number, number];
 
 export const coordinate = (input: unknown): LatLng | null => {
@@ -36,24 +36,24 @@ export function partialLine(points: LatLng[], progress: number): LatLng[] {
 // Pins are round and sized for one emoji. Use the first character only if it
 // is an emoji, so a word or letter from the model can't overflow the pin.
 const graphemes = new Intl.Segmenter(undefined, { granularity: "grapheme" });
-export function pinEmoji(value: unknown): string {
-  if (typeof value !== "string") return "📍";
+export function pinEmoji(value: unknown): string | null {
+  if (typeof value !== "string") return null;
   const first = graphemes.segment(value.trim())[Symbol.iterator]().next().value?.segment;
-  return first && /\p{Extended_Pictographic}/u.test(first) ? first : "📍";
+  return first && /\p{Extended_Pictographic}/u.test(first) ? first : null;
 }
 
 /** A focusable pin with a label underneath; Enter/Space and click both select it. */
 export function createPinElement(onSelect: () => void) {
   const element = document.createElement("div");
-  element.className = "tv-map-marker";
+  element.className = "iui-map-marker";
   element.tabIndex = 0;
   element.setAttribute("role", "button");
   const content = document.createElement("div");
-  content.className = "tv-map-marker-content";
+  content.className = "iui-map-marker-content";
   const pin = document.createElement("span");
-  pin.className = "tv-map-pin";
+  pin.className = "iui-map-pin";
   const label = document.createElement("span");
-  label.className = "tv-map-label";
+  label.className = "iui-map-label";
   content.append(pin, label);
   element.append(content);
   element.addEventListener("click", onSelect);

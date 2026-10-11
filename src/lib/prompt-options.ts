@@ -1,48 +1,75 @@
-import { openuiChatPromptOptions } from "@openuidev/react-ui/genui-lib/prompt-options";
+import type { PromptOptions } from "@openuidev/react-lang";
+import { demoToolSpecs } from "./demo-data";
 
-// With OpenUI Gateway, its hosted image_search tool finds photos for each place.
-const IMAGE_SEARCH_RULE = "Travel images: before writing a sightseeing route, run image_search once with one query per stop and per suggestion. Copy returned Image URLs exactly into TravelImage.src and TravelStop.imageUrl; never invent or edit image URLs. When a place has no result, leave the URL empty and give its exact Wikipedia title as wikiTitle.";
-// Local models (Ollama) have no image search; photos come from the Wikipedia fallback.
-const NO_IMAGE_SEARCH_RULE = "Travel images: no image search is available. Leave TravelImage.src and TravelStop.imageUrl empty and give every place its exact English Wikipedia article title as wikiTitle; photos are loaded from Wikipedia.";
+/**
+ * Prompt options that teach the model to answer with working tools: the page
+ * holds its inputs and lists in $variables and computes with @functions, so
+ * it works without sending anything back to the assistant.
+ */
 
-export const promptOptions = {
-  ...openuiChatPromptOptions,
+export const exampleShoppingList = `root = Card([title, stepper, list, copy])
+$guests = 4
+$got = []
+title = Title("Pasta night for " + @Plural($guests, "guest"), "lg")
+stepper = Row([IconButton("minus", @Set($guests, @Clamp($guests - 1, 1, 20)), "Fewer"), Text($guests + "", "lg", null, "semibold"), IconButton("plus", @Set($guests, @Clamp($guests + 1, 1, 20)), "More")], 3)
+lines = @Each(base, "i", {name: i.name, qty: @Round(i.qty * $guests / 4) + i.unit})
+list = Col(@Each(lines, "l", Pressable([Row([Icon(@Includes($got, l.name) ? "check-circle" : "circle", "sm"), Text(l.qty + " " + l.name, "sm", null, null, false, @Includes($got, l.name))], 2)], @Set($got, @Toggle($got, l.name)), @Includes($got, l.name), 2)), 1)
+copy = Button("Copy list", @CopyToClipboard(@Join(@Each(lines, "l", l.qty + " " + l.name), "\\n")), "outline", null, "sm", "copy")
+base = [{name: "spaghetti", qty: 400, unit: " g"}, {name: "tomatoes", qty: 6, unit: ""}, {name: "parmesan", qty: 80, unit: " g"}]`;
+
+export const exampleTrip = `root = Col([title, intro, photos, facts, Title("Day by day", "md"), days, prefs])
+$pace = "Relaxed"
+title = Title("Three days in Lisbon", "xl")
+intro = Text("Hills, tiled facades and the Tagus: start in **Alfama**, give a day to Belém, then take the train to Sintra.")
+photos = Carousel([SearchImage("Alfama Lisbon", 1.25), SearchImage("Belém Tower", 1.25), SearchImage("Pena Palace", 1.25)], 260)
+facts = Row([Badge("Best in April to June"), Badge("Tram 28", "info"), Badge("About €120 a day", "success")], 2, null, null, true)
+days = Col(@Each(plan, "d", Row([Box([SearchImage(d.place, 1, "lg")], null, null, null, null, null, null, 96), Col([Text([Icon("map-pin", "sm"), " Day " + d.day + " · " + d.title], "md", null, "semibold"), Text(d.text, "sm", "muted")], 1)], 4, "start")), 5)
+prefs = Card([Title("Make it yours", "sm"), Form([RadioGroup($pace, ["Relaxed", "Packed"], "Pace", "pills"), Button("Plan my trip", @ToAssistant("Tailor my Lisbon trip"))])], "soft")
+plan = [{day: 1, title: "Alfama", place: "São Jorge Castle", text: "Climb to the castle, then lunch on grilled sardines."}, {day: 2, title: "Belém", place: "Jerónimos Monastery", text: "The monastery, the tower and pastéis de Belém."}, {day: 3, title: "Sintra", place: "Pena Palace", text: "Train from Rossio; book the palace for 9 AM."}]`;
+
+export const exampleDashboard = `root = Col([head, kpis, Grid([weekly, byRegion], 2, 280, 4), top], 4)
+$region = "All"
+orders = Query("get_orders", {days: 90}, {rows: []})
+rows = $region == "All" ? orders.rows : @Filter(orders.rows, "region", "==", $region)
+head = Row([Title("Sales, last 90 days", "lg"), Spacer(), SegmentedControl($region, ["All", "North", "South", "East", "West"])], 3, null, null, true)
+kpis = Grid([Card([Caption("Revenue"), Title(@Format(@Sum(rows.amount), "compact", 1, "USD"), "xl")]), Card([Caption("Orders"), Title(@Format(@Count(rows)), "xl")])], 2, 160, 3)
+weekly = Card([Title("Revenue by week", "sm"), Chart("line", @Bucket(rows, "date", "week", "amount"), "key", ["value"], "currency")])
+byRegion = Card([Title("By region", "sm"), Chart("donut", @GroupBy(orders.rows, "region", "amount"), "key", ["value"], "currency")])
+top = Table(["Product", "Revenue"], @Each(@Top(@GroupBy(rows, "product", "amount"), "value", 5), "p", [p.key, @Format(p.value, "currency")]))`;
+
+const rules = [
+  "Compose the answer like a page, not a form letter: a Title, a short Text, then a mix of blocks that show the content. SearchImage for every place, dish, product or thing that has a look (the app finds the photo, so never say you cannot show photos); Row, Grid and Carousel to set things side by side; Badge rows for quick facts; Card only to group a block; Popover for an aside.",
+  "Answer with a working tool whenever the request involves numbers, choices, lists, steps, a game or something to explore: keep inputs and lists in $variables, compute everything shown from them with expressions and @functions, and change them with @Set. The page must work on its own, without another message.",
+  "Use @ToAssistant only for what the page cannot compute: a Form's submit Button, or a new request (\"Plan another day\"). Its message is short and first person, like the user typing it (\"Help me choose a bike\"); the form values travel with it, so never repeat them in the message.",
+  "$variable defaults are literals (numbers, strings, lists, objects), never expressions or @calls. Edit lists with @Append, @Remove, @RemoveAt and @Update; track selections with @Toggle and @Includes.",
+  "cond ? a : b also picks between components; there is no @If. Use only the listed @functions; you cannot define your own.",
+  "Derive rows once in a statement with @Each(list, \"x\", {...}), then reuse them in @Each, Table, Chart, @Sum(rows.field) and @Join. @Each(@Range(0, n), \"i\", ...) builds a series or repeats a step.",
+  "@Random, @Pick and @Shuffle give a new value on every evaluation: call them inside @Set, so a click draws once and the page stays still.",
+  "Pick the medium that shows the idea: Chart for numbers across time or categories; Svg shapes that read $variables for mechanisms and diagrams; Map with MapMarker for places and routes; Table for comparisons; Flashcard and Celebration for learning and games; HtmlView only for a game or animation that needs a loop.",
+  "Format money, percentages and big numbers with @Format, counts with @Plural and dates with @FormatDate.",
+  "Dates relative to now (today, this week, next month) start from @Today(), never a fixed date. <, >, <= and >= compare numbers only, so order two dates with @DaysBetween(a, b) > 0.",
+  "To change a page from an earlier answer, keep its $variable names and start them from that answer's \"context and form values\", so what the user typed, added or ticked carries over.",
+  "Read a number input for a count or amount through @Default and @Clamp with a sensible minimum, e.g. @Clamp(@Default($people, 1), 1, 50), so 0, empty or negative cannot divide by zero or zero out the page.",
+  "Answer a plain knowledge or safety question with Markdown text, adding a SearchImage or a Quote only where it helps.",
+];
+
+/** The chat prompt: no tools, $variables and functions. */
+export const promptOptions: PromptOptions = {
+  bindings: true,
+  additionalRules: rules,
   examples: [
-    ...(openuiChatPromptOptions.examples ?? []),
-    `Example — a flexible sightseeing response. All content and destinations are supplied by the model, never a city-specific UI template:
-root = Card([title, intro, gallery, map, itinerary, more, advice, customize])
-title = TravelHeading("An afternoon in Lisbon", "title")
-intro = TravelProse("Start by the river, then explore **Alfama on foot**.")
-gallery = TravelGallery([photo1, photo2, photo3])
-photo1 = TravelImage("", "Belém Tower by the river", "", "Belém Tower")
-photo2 = TravelImage("", "Alfama streets", "", "Alfama")
-photo3 = TravelImage("", "Lisbon architecture", "", "Lisbon")
-map = TravelMap([s1, s2])
-itinerary = TravelItinerary("Your itinerary", [s1, s2])
-s1 = TravelStop("belem", "Belém Tower", "1:00–2:00 PM", "Explore the historic waterfront.", "", 38.6916, -9.2160, "🏰", "Landmarks", "", "Belém Tower")
-s2 = TravelStop("alfama", "Alfama", "3:00–5:00 PM", "Take your time in the old streets.", "", 38.7118, -9.1300, "🚋", "Neighborhoods", "", "Alfama")
-more = TravelSuggestions("Add to your day", [x1, x2])
-x1 = TravelStop("jeronimos", "Jerónimos Monastery", "+1.5 hrs", "A Manueline masterpiece next to Belém Tower.", "", 38.6979, -9.2068, "⛪", "Landmarks", "", "Jerónimos Monastery")
-x2 = TravelStop("lx-factory", "LX Factory", "+1 hr", "Shops and cafés in a former textile complex.", "", 38.7036, -9.1786, "🛍️", "Neighborhoods", "", "LX Factory")
-advice = TravelProse("Take a taxi between Belém and Alfama, then continue on foot.")
-customize = Form("customize", customizeButtons, [timeField, travelField, interestField])
-timeField = FormControl("How much time do you have?", RadioGroup("time", [RadioItem("Half day", "4–5 hours", "half-day"), RadioItem("Full day", "8–10 hours", "full-day")], "full-day"))
-travelField = FormControl("How will you get around?", RadioGroup("travel", [RadioItem("Walking & public transport", "", "transit"), RadioItem("Walking & rideshare", "", "rideshare")], "transit"))
-interestField = FormControl("What interests you?", CheckBoxGroup("interests", [CheckBoxItem("Landmarks", "", "landmarks", true), CheckBoxItem("Food & cafés", "", "food"), CheckBoxItem("Parks & nature", "", "nature")]))
-customizeButtons = Buttons([Button("Personalize my trip", Action([@ToAssistant("Customize my Lisbon itinerary with these preferences")]), "primary")])`,
-  ],
-  additionalRules: [
-    ...(openuiChatPromptOptions.additionalRules ?? []),
-    IMAGE_SEARCH_RULE,
-    "Travel stops: each TravelStop needs a unique id, plausible coordinates, a useful time and a concise description. Emit TravelMap before the stop definitions so its pins appear while streaming.",
-    "Customize your route: end a travel answer with a section TravelHeading and a Form (time, transport, interests) using short option labels with empty descriptions. Give each RadioGroup a default that exactly matches an option value, add no required rules, and use one primary Button with Action([@ToAssistant(...)]). On the next turn, rebuild the route from the submitted values.",
-    "Route edits: an earlier answer may end with \"(User's edits to this route: ...)\" listing TravelStop ids the user removed and places they added. Treat that edited route as the current one in follow-ups and rebuilt itineraries.",
-    "Do not present opening times, event schedules, weather or fares as verified without evidence.",
+    `Example 1: A guest stepper that rescales a shopping list, with a checklist and a copy button:\n\n${exampleShoppingList}`,
+    `Example 2: A composed trip answer: photos, facts, day rows and a short form:\n\n${exampleTrip}`,
   ],
 };
 
-/** The same options for a local model: no image search, so photos come from Wikipedia. */
-export const localPromptOptions = {
+/** For dashboards over the demo data tools: Query rows, shaped with the data functions. */
+export const dashboardPromptOptions: PromptOptions = {
   ...promptOptions,
-  additionalRules: promptOptions.additionalRules.map((rule) => (rule === IMAGE_SEARCH_RULE ? NO_IMAGE_SEARCH_RULE : rule)),
+  tools: demoToolSpecs,
+  toolExamples: [`Example 3: A live dashboard over Query rows:\n\n${exampleDashboard}`],
+  additionalRules: [
+    ...rules,
+    "Fetch rows with Query and compute every number, group and series from them with @Sum, @Count, @GroupBy, @Bucket, @Top, @Stats and @Change. A filter is a $variable (from this library's Select or SegmentedControl) applied with @Filter; select dates and ranges with @Between, since @Filter's < and > compare numbers only.",
+  ],
 };
