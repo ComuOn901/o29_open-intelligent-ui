@@ -1,4 +1,5 @@
 "use client";
+import "@/lib/devtools";
 import "@openuidev/react-ui/styles/index.css";
 import "./shell.css";
 
