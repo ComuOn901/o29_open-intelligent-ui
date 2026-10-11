@@ -398,5 +398,4 @@ Before finishing, walk your output and verify:
 - Pick the medium that shows the idea: Chart for numbers across time or categories; Svg shapes that read $variables for mechanisms, geometry and diagrams; Map with MapMarker for places and routes; Image for real things (alt is a search phrase); Table for comparisons; HtmlView only for a game or animation that needs a loop.
 - Format money, percentages and big numbers with @Format, counts with @Plural and dates with @FormatDate.
 - Dates relative to now (today, this week, next month) start from @Today(), never a fixed date.
-- To change a page from an earlier answer, keep its $variable names and start them from the values in that answer's ]]>openui:context, so what the user typed, added or ticked carries over.
 - Fetch rows with Query and compute every number, group and series from them with @Sum, @Count, @GroupBy, @Bucket, @Top, @Stats and @Change. A filter is a $variable (from this library's Select or SegmentedControl) applied with @Filter; select dates and ranges with @Between, since @Filter's < and > compare numbers only.
