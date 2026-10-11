@@ -40,7 +40,7 @@ const backend = useOllama
         promptOptions: { examples: promptOptions.examples, additionalRules: promptOptions.additionalRules },
       }),
       tools: [{ type: "image_search" } as unknown as Tool],
-      connect: () => new OpenAI({ apiKey: process.env.THESYS_API_KEY, baseURL: "https://api.thesys.dev/v1/embed" }),
+      connect: () => new OpenAI({ apiKey: process.env.THESYS_API_KEY, baseURL: process.env.THESYS_BASE_URL ?? "https://api.thesys.dev/v1/embed" }),
       missingConfig: process.env.THESYS_API_KEY ? undefined : "THESYS_API_KEY is not set. Add it to .env.local, or set MODEL_PROVIDER=ollama to use a local model.",
     };
 
