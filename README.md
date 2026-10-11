@@ -10,7 +10,7 @@ In ChatGPT's Intelligent UI, a request such as "plan a day in San Francisco" ret
 
 ## Demo video
 
-ChatGPT's Intelligent UI (left) and this project (right) answering the same request. The video is hosted separately: TODO(link).
+ChatGPT's Intelligent UI (left) and this project (right) answering the same request.
 
 ![ChatGPT and OpenUI side by side, each showing a one-day San Francisco route with photos and a map](docs/openui-chatgpt-comparison.jpg)
 
