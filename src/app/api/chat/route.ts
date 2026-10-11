@@ -9,13 +9,13 @@ import type { ResponseInputItem, Tool } from "openai/resources/responses/respons
 // against either and the browser stream is the same.
 //
 // OpenUI Gateway (default): cloud: true lets Gateway build the prompt from this
-// library spec and validate/correct the OpenUI Lang it streams back. Gateway
-// also runs image search itself; the model puts the image URLs into the
-// components (image_search is a Gateway extension to the SDK's tool union).
+// library spec and validate/correct the OpenUI Lang it streams back.
 //
 // Ollama (MODEL_PROVIDER=ollama, or OLLAMA_MODEL set): a local model. The full
-// OpenUI prompt is built here, there is no image search (the Image component
-// searches Wikipedia itself), and the output is not corrected.
+// OpenUI prompt is built here and the output is not corrected.
+//
+// Neither backend gets an image search tool: the Image component searches for
+// its alt text itself.
 
 // lang-core types schema.$defs as component schemas only, so the ActionExpression
 // def (an anyOf) in the generated spec needs a cast.
@@ -39,7 +39,7 @@ const backend = useOllama
         library: librarySpec,
         promptOptions: { examples: promptOptions.examples, additionalRules: promptOptions.additionalRules },
       }),
-      tools: [{ type: "image_search" } as unknown as Tool],
+      tools: [] as Tool[],
       connect: () => new OpenAI({ apiKey: process.env.THESYS_API_KEY, baseURL: process.env.THESYS_BASE_URL ?? "https://api.thesys.dev/v1/embed" }),
       missingConfig: process.env.THESYS_API_KEY ? undefined : "THESYS_API_KEY is not set. Add it to .env.local, or set MODEL_PROVIDER=ollama to use a local model.",
     };
