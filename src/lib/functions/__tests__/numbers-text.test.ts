@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { value } from "./run";
+import { run, value } from "./run";
 
 afterEach(() => vi.restoreAllMocks());
 
@@ -30,6 +30,11 @@ const cases: Record<string, [string, unknown][]> = {
     ["@Percent(1, 0)", 0],
     ["@Percent(-1, 4)", -25],
     ["@Percent(1, null)", null],
+  ],
+  Lerp: [
+    ["@Lerp(0, 10, 0.25)", 2.5],
+    ["@Lerp(10, 0, 1)", 0],
+    ["@Lerp(0, 10)", null],
   ],
   Allocate: [
     ["@Allocate(100, [1, 1, 1])", [33.34, 33.33, 33.33]],
@@ -84,7 +89,67 @@ const cases: Record<string, [string, unknown][]> = {
     ["@Pad(123, 2)", "123"],
     ["@Pad(7)", null],
   ],
+  Payment: [
+    ["@Round(@Payment(300000, 0.5, 360), 2)", 1798.65],
+    ["@Payment(1200, 0, 12)", 100],
+    ["@Payment(1000, 1, 0)", null],
+  ],
+  Convert: [
+    ['@Round(@Convert(10, "km", "mi"), 3)', 6.214],
+    ['@Convert(100, "c", "f")', 212],
+    ['@Round(@Convert(2, "CUP", "ml"))', 473],
+    ['@Convert(1, "kg", "m")', null],
+    ['@Convert(1, "parsec", "m")', null],
+  ],
+  Trim: [
+    ['@Trim("  hi there ")', "hi there"],
+    ["@Trim(3)", null],
+  ],
+  Capitalize: [
+    ['@Capitalize("new york-city trip")', "New York-City Trip"],
+    ['@Capitalize("élan vital")', "Élan Vital"],
+  ],
+  Split: [
+    ['@Split("a, b,,c")', ["a", "b", "c"]],
+    ['@Split("eggs\nmilk", "\n")', ["eggs", "milk"]],
+    ['@Split("")', []],
+  ],
+  Replace: [
+    ['@Replace("a-b-c", "-", " / ")', "a / b / c"],
+    ['@Replace("abc", "", "x")', "abc"],
+  ],
+  Duration: [
+    ["@Duration(4800)", "1h 20m"],
+    ["@Duration(245)", "4m 05s"],
+    ["@Duration(45)", "45s"],
+    ['@Duration(4805, "clock")', "1:20:05"],
+    ['@Duration(65, "clock")', "1:05"],
+    ["@Duration(-60)", "-1m"],
+  ],
+  Default: [
+    ['@Default("", 0)', 0],
+    ["@Default(null, \"n/a\")", "n/a"],
+    ["@Default(0, 5)", 0],
+    ["@Default(false, true)", false],
+  ],
+  Upper: [
+    ['@Upper("abc")', "ABC"],
+    ['@Upper("")', ""],
+    ["@Upper(5)", null],
+  ],
+  Lower: [
+    ['@Lower("AbC")', "abc"],
+    ["@Lower(null)", null],
+  ],
 };
+
+describe("@Default with state", () => {
+  it("falls back for an empty input and keeps typed values", () => {
+    expect(run('@Default($w, 0) + 1', "$w = null").value).toBe(1);
+    expect(run('@Default($w, 0) + 1', '$w = ""').value).toBe(1);
+    expect(run('@Default($w, 0) + 1', "$w = 4").value).toBe(5);
+  });
+});
 
 describe.each(Object.entries(cases))("@%s", (_name, rows) => {
   it.each(rows)("%s", (expr, expected) => expect(value(expr)).toEqual(expected));

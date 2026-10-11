@@ -33,6 +33,23 @@ const cases: Record<string, [string, unknown][]> = {
     ['@DaysBetween("2026-10-09", "2026-10-09")', 0],
     ['@DaysBetween("2026-10-09", null)', null],
   ],
+  AddMonths: [
+    ['@AddMonths("2026-01-31", 1)', "2026-02-28"],
+    ['@AddMonths("2026-10-09", -12)', "2025-10-09"],
+    ['@AddMonths("2026-11-15", 3)', "2027-02-15"],
+  ],
+  MonthsBetween: [
+    ['@MonthsBetween("1990-05-20", "2026-05-19")', 431],
+    ['@MonthsBetween("1990-05-20", "2026-05-20")', 432],
+    ['@MonthsBetween("2026-03-15", "2026-01-20")', -1],
+  ],
+  StartOf: [
+    ['@StartOf("2026-10-09", "week")', "2026-10-05"],
+    ['@StartOf("2026-10-05", "week")', "2026-10-05"],
+    ['@StartOf("2026-10-11", "week")', "2026-10-05"],
+    ['@StartOf("2026-10-09", "month")', "2026-10-01"],
+    ['@StartOf("2026-10-09", "year")', "2026-01-01"],
+  ],
   GroupBy: [
     ['@GroupBy(ROWS, "region", "amount")', [{ key: "West", value: 17 }, { key: "East", value: 5 }]],
     ['@GroupBy(ROWS, "region")', [{ key: "West", value: 2 }, { key: "East", value: 1 }]],
@@ -127,6 +144,14 @@ describe("@Now", () => {
     vi.setSystemTime(new Date("2026-10-09T12:00:00Z"));
     expect(value("@Now()")).toBe("2026-10-09T12:00:00.000Z");
     expect(value('@FormatDate(@AddDays(@Now(), 1), "short")')).toBe("Oct 10");
+  });
+});
+
+describe("@Today", () => {
+  it("returns the viewer's calendar day", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date(2026, 9, 9, 23, 30));
+    expect(value("@Today()")).toBe("2026-10-09");
   });
 });
 

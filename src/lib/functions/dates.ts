@@ -84,4 +84,59 @@ export const DaysBetween = defineFunction({
   fn: ({ from, to }) => parseDate(to).day - parseDate(from).day,
 });
 
-export const dateFunctions = [Now, FormatDate, AddDays, DaysBetween];
+export const Today = defineFunction({
+  name: "Today",
+  description: 'Today\'s date in the viewer\'s time zone, as "YYYY-MM-DD"',
+  params: z.object({}),
+  returns: z.string(),
+  fn: () => isoDay(parseDate(Date.now()).day),
+});
+
+/** Year, month (0-11) and day of a calendar day. */
+function ymd(day: number): [number, number, number] {
+  const d = new Date(day * DAY);
+  return [d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()];
+}
+
+export const AddMonths = defineFunction({
+  name: "AddMonths",
+  description: 'The date months later (negative: earlier), kept within the month (Jan 31 + 1 is Feb 28), as "YYYY-MM-DD"; 12 months is a year',
+  params: z.object({ date: date(), months: z.number() }),
+  returns: z.string(),
+  fn: ({ date, months }) => {
+    const [y, m, d] = ymd(parseDate(date).day);
+    const target = m + Math.trunc(months);
+    const last = new Date(Date.UTC(y, target + 1, 0)).getUTCDate();
+    return isoDay(Date.UTC(y, target, Math.min(d, last)) / DAY);
+  },
+});
+
+export const MonthsBetween = defineFunction({
+  name: "MonthsBetween",
+  description: "Whole months from one date to another (negative if to is earlier); @Floor(@MonthsBetween(birthday, @Today()) / 12) is an age",
+  params: z.object({ from: date(), to: date() }),
+  returns: z.number(),
+  fn: ({ from, to }) => {
+    const [y1, m1, d1] = ymd(parseDate(from).day);
+    const [y2, m2, d2] = ymd(parseDate(to).day);
+    let months = (y2 - y1) * 12 + (m2 - m1);
+    if (months > 0 && d2 < d1) months -= 1;
+    if (months < 0 && d2 > d1) months += 1;
+    return months;
+  },
+});
+
+export const StartOf = defineFunction({
+  name: "StartOf",
+  description: 'First day of the date\'s "week" (Monday), "month" or "year", as "YYYY-MM-DD"',
+  params: z.object({ date: date(), unit: z.enum(["week", "month", "year"]) }),
+  returns: z.string(),
+  fn: ({ date, unit }) => {
+    const day = parseDate(date).day;
+    const [y, m] = ymd(day);
+    if (unit === "week") return isoDay(day - ((new Date(day * DAY).getUTCDay() + 6) % 7));
+    return isoDay(Date.UTC(y, unit === "month" ? m : 0, 1) / DAY);
+  },
+});
+
+export const dateFunctions = [Now, Today, FormatDate, AddDays, AddMonths, DaysBetween, MonthsBetween, StartOf];

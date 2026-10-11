@@ -12,6 +12,14 @@ export const Append = defineFunction({
   fn: ({ list, item }) => [...list, item],
 });
 
+export const Prepend = defineFunction({
+  name: "Prepend",
+  description: "Copy of the list with item added at the start",
+  params: z.object({ list: list(), item: z.any() }),
+  returns: list(),
+  fn: ({ list, item }) => [item, ...list],
+});
+
 export const Concat = defineFunction({
   name: "Concat",
   description: "Joins two lists",
@@ -101,10 +109,13 @@ export const Take = defineFunction({
 
 export const Slice = defineFunction({
   name: "Slice",
-  description: "Items from start up to end (not included); negative counts from the end",
-  params: z.object({ list: list(), start: z.number(), end: z.number().optional() }),
-  returns: list(),
-  fn: ({ list, start, end }) => list.slice(Math.trunc(start), end === undefined ? undefined : Math.trunc(end)),
+  description: "Items, or characters of text, from start up to end (not included); negative counts from the end",
+  params: z.object({ list: z.union([list(), z.string()]), start: z.number(), end: z.number().optional() }),
+  returns: z.union([list(), z.string()]),
+  fn: ({ list, start, end }) => {
+    const to = end === undefined ? undefined : Math.trunc(end);
+    return typeof list === "string" ? list.slice(Math.trunc(start), to) : list.slice(Math.trunc(start), to);
+  },
 });
 
 export const Unique = defineFunction({
@@ -121,6 +132,14 @@ export const Unique = defineFunction({
       return true;
     });
   },
+});
+
+export const Reverse = defineFunction({
+  name: "Reverse",
+  description: "Copy in reverse order",
+  params: z.object({ list: list() }),
+  returns: list(),
+  fn: ({ list }) => [...list].reverse(),
 });
 
 export const Range = defineFunction({
@@ -161,7 +180,33 @@ export const Shuffle = defineFunction({
   },
 });
 
+export const Flatten = defineFunction({
+  name: "Flatten",
+  description: "One list from a list of lists, e.g. [[1, 2], [3]] is [1, 2, 3]",
+  params: z.object({ list: list() }),
+  returns: list(),
+  fn: ({ list }) => {
+    const out = list.flatMap((item) => (Array.isArray(item) ? item : [item]));
+    if (out.length > MAX_ITEMS) throw new Error(`more than ${MAX_ITEMS} items`);
+    return out;
+  },
+});
+
+export const Chunk = defineFunction({
+  name: "Chunk",
+  description: "The list cut into lists of size items, e.g. for weeks of 7 days or pages",
+  params: z.object({ list: list(), size: z.number() }),
+  returns: z.array(list()),
+  fn: ({ list, size }) => {
+    const n = Math.trunc(size);
+    if (n < 1) throw new Error("size must be 1 or more");
+    const out: unknown[][] = [];
+    for (let i = 0; i < list.length; i += n) out.push(list.slice(i, i + n));
+    return out;
+  },
+});
+
 export const listFunctions = [
-  Append, Concat, Remove, RemoveAt, Update, Toggle, Includes, Find, IndexOf,
-  Take, Slice, Unique, Range, Pick, Shuffle,
+  Append, Prepend, Concat, Remove, RemoveAt, Update, Toggle, Includes, Find, IndexOf,
+  Take, Slice, Unique, Reverse, Range, Pick, Shuffle, Flatten, Chunk,
 ];

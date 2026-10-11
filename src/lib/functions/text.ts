@@ -1,6 +1,6 @@
 import { defineFunction } from "@openuidev/react-lang";
 import { z } from "zod/v4";
-import { list, read } from "./shared";
+import { list, MAX_ITEMS, read } from "./shared";
 
 const LOCALE = "en-US";
 
@@ -80,4 +80,83 @@ export const Pad = defineFunction({
   fn: ({ value, length, char = "0" }) => String(value).padStart(Math.min(Math.trunc(length), 1000), char || "0"),
 });
 
-export const textFunctions = [Format, Join, Plural, Pad];
+export const Upper = defineFunction({
+  name: "Upper",
+  description: "Text in upper case",
+  params: z.object({ text: z.string() }),
+  returns: z.string(),
+  fn: ({ text }) => text.toUpperCase(),
+});
+
+export const Lower = defineFunction({
+  name: "Lower",
+  description: "Text in lower case",
+  params: z.object({ text: z.string() }),
+  returns: z.string(),
+  fn: ({ text }) => text.toLowerCase(),
+});
+
+export const Trim = defineFunction({
+  name: "Trim",
+  description: "Text without spaces at the start and end",
+  params: z.object({ text: z.string() }),
+  returns: z.string(),
+  fn: ({ text }) => text.trim(),
+});
+
+export const Capitalize = defineFunction({
+  name: "Capitalize",
+  description: 'Each word with a capital first letter, e.g. "new york" is "New York"',
+  params: z.object({ text: z.string() }),
+  returns: z.string(),
+  fn: ({ text }) => text.replace(/(^|[\s\-(/"])(\p{L})/gu, (_, before: string, letter: string) => before + letter.toUpperCase()),
+});
+
+export const Split = defineFunction({
+  name: "Split",
+  description: 'List of the parts of text between sep (default ","), each trimmed, empty parts dropped, e.g. @Split("a, b,,c") is ["a", "b", "c"]',
+  params: z.object({ text: z.string(), sep: z.string().optional() }),
+  returns: z.array(z.string()),
+  fn: ({ text, sep = "," }) => {
+    const parts = text.split(sep === "" ? "" : sep).map((p) => p.trim()).filter((p) => p !== "");
+    if (parts.length > MAX_ITEMS) throw new Error(`more than ${MAX_ITEMS} items`);
+    return parts;
+  },
+});
+
+export const Replace = defineFunction({
+  name: "Replace",
+  description: "Text with every find replaced by replacement",
+  params: z.object({ text: z.string(), find: z.string(), replacement: z.string() }),
+  returns: z.string(),
+  fn: ({ text, find, replacement }) => (find === "" ? text : text.split(find).join(replacement)),
+});
+
+export const Duration = defineFunction({
+  name: "Duration",
+  description: 'Seconds as text: "short" 1h 20m, 4m 05s, 45s (default); "clock" 1:20:00, 4:05',
+  params: z.object({ seconds: z.number(), style: z.enum(["short", "clock"]).optional() }),
+  returns: z.string(),
+  fn: ({ seconds, style = "short" }) => {
+    if (!Number.isFinite(seconds)) throw new Error("seconds is not a finite number");
+    const sign = seconds < 0 ? "-" : "";
+    const total = Math.round(Math.abs(seconds));
+    const [h, m, s] = [Math.floor(total / 3600), Math.floor((total % 3600) / 60), total % 60];
+    const two = (n: number) => String(n).padStart(2, "0");
+    if (style === "clock") return sign + (h ? `${h}:${two(m)}:${two(s)}` : `${m}:${two(s)}`);
+    if (h) return `${sign}${h}h${m ? ` ${m}m` : ""}`;
+    if (m) return `${sign}${m}m${s ? ` ${two(s)}s` : ""}`;
+    return `${sign}${s}s`;
+  },
+});
+
+export const Default = defineFunction({
+  name: "Default",
+  description: 'value, or fallback when value is null, "" or not a number, e.g. an empty number input: @Default($weight, 0)',
+  params: z.object({ value: z.any().optional(), fallback: z.any() }),
+  returns: z.any(),
+  fn: ({ value, fallback }) =>
+    value == null || value === "" || (typeof value === "number" && Number.isNaN(value)) ? fallback : value,
+});
+
+export const textFunctions = [Format, Join, Plural, Pad, Upper, Lower, Trim, Capitalize, Split, Replace, Duration, Default];
