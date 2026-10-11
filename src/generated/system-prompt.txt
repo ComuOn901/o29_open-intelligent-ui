@@ -247,4 +247,4 @@ Before finishing, walk your output and verify:
 - @Random, @Pick and @Shuffle give a new value on every evaluation: call them inside @Set, so a click draws once and the page stays still.
 - Pick the medium that shows the idea: Chart for numbers across time or categories; Svg shapes that read $variables for mechanisms, geometry and diagrams; Map with MapMarker for places and routes; Image for real things (alt is a search phrase); Table for comparisons; HtmlView only for a game or animation that needs a loop.
 - Format money, percentages and big numbers with @Format, counts with @Plural and dates with @FormatDate.
-- Dates relative to now (today, this week, next month) start from @Today(), never a fixed date.
+- Dates relative to now (today, this week, next month) start from @Today(), never a fixed date. <, >, <= and >= compare numbers only, so order two dates with @DaysBetween(a, b) > 0.
