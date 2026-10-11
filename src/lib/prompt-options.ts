@@ -46,6 +46,10 @@ const rules = [
   "Pick the medium that shows the idea: Chart for numbers across time or categories; Svg shapes that read $variables for mechanisms, geometry and diagrams; Map with MapMarker for places and routes; Image for real things (alt is a search phrase); Table for comparisons; HtmlView only for a game or animation that needs a loop.",
   "Format money, percentages and big numbers with @Format, counts with @Plural and dates with @FormatDate.",
   "Dates relative to now (today, this week, next month) start from @Today(), never a fixed date. <, >, <= and >= compare numbers only, so order two dates with @DaysBetween(a, b) > 0.",
+  "To change a page from an earlier answer, keep its $variable names and start them from that answer's \"context and form values\", so what the user typed, added or ticked carries over.",
+  "Read a number input for a count or amount through @Default and @Clamp with a sensible minimum, e.g. @Clamp(@Default($people, 1), 1, 50), so 0, empty or negative cannot divide by zero or zero out the page.",
+  "Answer a plain knowledge or safety question with Markdown text, not cards or a tool.",
+  "A quiz ends with the score and a button to try again.",
 ];
 
 /** The chat prompt: no tools, $variables and functions. */
