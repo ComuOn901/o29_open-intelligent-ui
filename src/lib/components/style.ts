@@ -2,11 +2,10 @@ import { tagSchemaId } from "@openuidev/react-lang";
 import type { CSSProperties } from "react";
 import { z } from "zod/v4";
 
-// ─── Safety ─────────────────────────────────────────────────────────────────
-
+// Safety
 // A model-written style value could otherwise load a resource: `background: url(...)`.
 const UNSAFE_CSS = /(url|image|image-set|cross-fade|element|expression|paint|var|attr|env)\s*\(|@import|[\\;{}<>]/i;
-export const isSafeCss = (value: string) => !UNSAFE_CSS.test(value);
+const isSafeCss = (value: string) => !UNSAFE_CSS.test(value);
 
 function protocolOf(value: string): string | null {
   try {
@@ -23,8 +22,7 @@ export function webUrl(value: unknown): string | null {
   return protocol === "http:" || protocol === "https:" ? value.trim() : null;
 }
 
-// ─── Shared prop schemas ────────────────────────────────────────────────────
-
+// Shared prop schemas
 /** Children slot: any component, or a list of them (from @Each). Printed as `Node[]`. */
 const node = z.any();
 tagSchemaId(node, "Node");
@@ -45,8 +43,7 @@ export const option = z.union([z.string(), z.object({ value: z.string(), label: 
 export type Option = z.infer<typeof option>;
 export const toOption = (o: Option) => (typeof o === "string" ? { value: o, label: o } : o);
 
-// ─── Values to CSS ──────────────────────────────────────────────────────────
-
+// Values to CSS
 const STATUS = ["info", "success", "warning", "danger", "purple", "pink"] as const;
 const FOREGROUND: Record<string, string> = {
   ink: "var(--iui-ink)",
@@ -76,7 +73,7 @@ export const bg = (value: unknown) => (typeof value === "string" ? (BACKGROUND[v
  * Text color for a model-chosen CSS color background (hex or rgb). Raw colors
  * do not follow the theme, so text on them is set dark or light to stay legible.
  */
-export function contrastOn(background: unknown): string | undefined {
+function contrastOn(background: unknown): string | undefined {
   if (typeof background !== "string" || background in BACKGROUND) return undefined;
   let rgb: number[] | null = null;
   const hex = /^#([\da-f]{3}|[\da-f]{6})$/i.exec(background.trim());

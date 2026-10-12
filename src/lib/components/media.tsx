@@ -24,8 +24,7 @@ export const Icon = defineComponent({
   ),
 });
 
-// ─── Image search ───────────────────────────────────────────────────────────
-
+// Image search
 const searches = new Map<string, Promise<string[]>>();
 
 async function getJson(url: string): Promise<Record<string, unknown>> {

@@ -1,7 +1,7 @@
 /* Component styles in the Open Intelligent UI design: quiet 20px panels,
    pill controls, a 24px range track, soft status tints. Tokens: theme.css. */
 
-/* ─── Layout ─────────────────────────────────────────────────────────────── */
+/* Layout */
 .iui-col, .iui-box { display: flex; flex-direction: column; min-width: 0; }
 .iui-row { display: flex; flex-direction: row; align-items: center; gap: 8px; min-width: 0; }
 .iui-row > * { min-width: 0; }
@@ -37,7 +37,7 @@
 .iui-form { display: flex; flex-direction: column; gap: var(--iui-field-gap); min-width: 0; }
 .iui-form > .iui-row:last-child:has(> .iui-button), .iui-form > .iui-button:last-child { margin-top: calc(var(--iui-action-gap) - var(--iui-field-gap)); }
 
-/* ─── Text ───────────────────────────────────────────────────────────────── */
+/* Text */
 .iui-title { color: var(--iui-ink); font-weight: 600; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
 .iui-title-sm { font-size: 15px; line-height: 1.5; }
 .iui-title-md { font-size: 17px; line-height: 1.4; letter-spacing: -0.2px; }
@@ -118,7 +118,7 @@
 .iui-md-h2 { font-size: 19px; letter-spacing: -0.3px; line-height: 1.35; }
 .iui-md-h3, .iui-md-h4 { font-size: 16px; line-height: 1.4; }
 
-/* ─── Buttons ────────────────────────────────────────────────────────────── */
+/* Buttons */
 .iui-button { display: inline-flex; align-items: center; justify-content: center; gap: 7px; align-self: flex-start; flex: none; min-height: 36px; padding: 8px 16px; border: 1px solid transparent; border-radius: 999px; font-size: 14px; line-height: 1.2; font-weight: 500; white-space: nowrap; cursor: pointer; transition: background .15s, border-color .15s, color .15s; }
 .iui-row > .iui-button { align-self: center; }
 .iui-button-sm { min-height: 32px; padding: 6px 12px; font-size: 13px; }
@@ -152,7 +152,7 @@
 .iui-pressable[aria-disabled="true"] { cursor: default; }
 .iui-pressable:focus-visible { outline: 2px solid var(--iui-focus) !important; outline-offset: -2px !important; }
 
-/* ─── Fields ─────────────────────────────────────────────────────────────── */
+/* Fields */
 .iui-field { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
 .iui-input { width: 100%; min-width: 0; min-height: 42px; padding: 10px 12px; border: 1px solid var(--iui-border-strong); border-radius: var(--iui-radius-md); background: var(--iui-canvas); color: var(--iui-ink); font-size: 15px; line-height: 1.4; font-variant-numeric: tabular-nums; outline: none; transition: border-color .15s, box-shadow .15s; }
 .iui-input::placeholder { color: var(--iui-faint); opacity: 1; }
@@ -200,7 +200,7 @@
 .iui-radio-group > legend { padding: 0; margin-bottom: 10px; }
 .iui-radio-group > div { display: flex; flex-direction: column; gap: 2px; }
 .iui-choice-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
-/* Short choices are pills; explanatory choices are quiet cards (main's form styling). */
+/* Short choices are pills; explanatory choices are quiet cards */
 .iui-radio-pills > div { flex-direction: row; flex-wrap: wrap; gap: var(--iui-control-gap); }
 .iui-radio-cards > div { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 200px), 1fr)); gap: var(--iui-control-gap); }
 .iui-choice { position: relative; display: flex; align-items: center; min-height: 42px; padding: 9px 16px; border: 1px solid var(--iui-border); border-radius: 999px; background: var(--iui-canvas); color: var(--iui-ink); font-size: 15px; line-height: 22px; cursor: pointer; transition: background .15s, border-color .15s; }
@@ -213,7 +213,7 @@
 .iui-choice-description { color: var(--iui-muted); font-size: 14px; line-height: 21px; }
 .iui-choice:has(:focus-visible) { outline: 2px solid var(--iui-focus); outline-offset: 2px; }
 
-/* ─── Media and data ─────────────────────────────────────────────────────── */
+/* Media and data */
 .iui-image { position: relative; display: grid; place-items: center; width: 100%; min-width: 0; overflow: hidden; background: var(--iui-photo-empty); }
 .iui-image:not(.is-loaded)::before { content: ""; position: absolute; inset: 0; background: linear-gradient(100deg, transparent 30%, color-mix(in srgb, var(--iui-canvas) 55%, transparent) 50%, transparent 70%) 0 0 / 220% 100%; animation: iui-shimmer 1.4s linear infinite; }
 .iui-image:has(.iui-image-empty)::before { display: none; }
@@ -223,7 +223,7 @@
 .iui-image.is-loaded > img { opacity: 1; }
 .iui-image-empty { width: 26px; height: 26px; color: var(--iui-photo-empty-icon); }
 
-/* A framed table (the designer's): 14px corners, a surface header row, hover rows. */
+/* A framed table: 14px corners, a surface header row, hover rows. */
 .iui-table-scroll { width: 100%; min-width: 0; overflow-x: auto; border: 1px solid var(--iui-border); border-radius: 14px; }
 .iui-table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.5; }
 .iui-table th, .iui-table td { padding: 13px 16px; border-bottom: 1px solid var(--iui-border); text-align: left; vertical-align: middle; }
@@ -260,7 +260,7 @@
 .iui-html-view > iframe { display: block; width: 100%; height: 100%; border: 0; background: transparent; }
 .iui-html-view-wait { display: grid; place-items: center; height: 100%; color: var(--iui-muted); font-size: 13px; }
 
-/* ─── Carousel, popover, code, quote, math, video, flashcard, confetti ─── */
+/* Carousel, popover, code, quote, math, video, flashcard, confetti */
 /* Items keep their borders and rings inside themselves; the track's 4px block
    padding (pulled back with a negative margin) leaves room for focus rings. */
 .iui-carousel { position: relative; min-width: 0; }
@@ -310,7 +310,7 @@
 .iui-confetti > i { position: absolute; top: -12px; width: 8px; height: 12px; border-radius: 2px; animation: iui-confetti 1.6s cubic-bezier(.2, .6, .4, 1) forwards; }
 @keyframes iui-confetti { to { transform: translate(var(--x), 105vh) rotate(var(--r)); opacity: .7; } }
 
-/* ─── Focus and motion ───────────────────────────────────────────────────── */
+/* Focus and motion */
 :is(.iui-button, .iui-icon-button, .iui-pressable, .iui-segmented > button, .iui-link, .iui-check > input):focus-visible { outline: 2px solid var(--iui-focus); outline-offset: 3px; }
 
 @media (max-width: 640px) {

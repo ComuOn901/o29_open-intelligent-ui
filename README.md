@@ -35,7 +35,7 @@ The dev-only page `/gallery` renders hand-written programs: a working answer for
 Requires Node 24.
 
 ```bash
-cp .env.example .env.local   # add your THESYS_API_KEY
+cp .env.example .env   # add your THESYS_API_KEY
 npm install
 npm run dev
 ```
@@ -92,12 +92,12 @@ It works with any OpenAI-compatible local server (Ollama, LM Studio) via `OLLAMA
    ollama create qwen3.8-32k -f Modelfile
    ```
 
-3. In `.env.local`, set `MODEL_PROVIDER=ollama` (and `OLLAMA_MODEL` to use another model), then `npm run dev`.
+3. In `.env`, set `MODEL_PROVIDER=ollama` (and `OLLAMA_MODEL` to use another model), then `npm run dev`.
 
 What changes with a local model:
 
 - **No output correction.** Gateway validates and corrects the generated OpenUI Lang; locally, the model's output is rendered as written, so larger models give better results.
-- **Speed depends on your hardware.** The first request after Ollama loads the model has to read the whole prompt; later requests reuse it and are much faster. For reasoning models, `REASONING_EFFORT=low` cuts the wait considerably. 
+- **Speed depends on your hardware.** The first request after Ollama loads the model has to read the whole prompt; later requests reuse it and are much faster. For reasoning models, `LLM_REASONING_EFFORT=low` cuts the wait considerably. 
 ## How it works
 
 - **Generation.** `/api/chat` calls OpenUI Gateway's Responses API with `generateSystemPrompt({ cloud: true })`, so Gateway validates and corrects the generated OpenUI Lang against this app's component library. No search tool is sent: `SearchImage` finds its own photo (see Photos below), so the model never announces a search that shows nothing. Requests ask for low reasoning effort (`LLM_REASONING_EFFORT`).
@@ -134,7 +134,7 @@ What changes with a local model:
 | `src/generated/system-prompt.txt` | The full system prompt for the library; `dashboard-system-prompt.txt` adds the demo data tools. Regenerate with `npm run prompt`. |
 | `scripts/bench/` | The benchmark: 16 example prompts and 8 dashboard prompts, run against a model and checked; see [Benchmark](#benchmark). |
 | `docs/openui-chatgpt-comparison.mp4` | Side-by-side video of ChatGPT and this project; `docs/openui-chatgpt-comparison.jpg` is its README preview. |
-| `.env.example` | The environment variables to copy into `.env.local`. |
+| `.env.example` | The environment variables to copy into `.env`. |
 
 ## For designers
 

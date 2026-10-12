@@ -5,7 +5,7 @@ import { DynamicIcon, iconNames, type IconName } from "lucide-react/dynamic.mjs"
 const names = new Set<string>(iconNames);
 
 /** "MapPin", "map_pin" and "map pin" all mean the lucide icon "map-pin". */
-export function iconName(value: unknown): IconName | null {
+function iconName(value: unknown): IconName | null {
   if (typeof value !== "string") return null;
   const name = value
     .trim()

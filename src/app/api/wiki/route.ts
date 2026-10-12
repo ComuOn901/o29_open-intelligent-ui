@@ -3,7 +3,7 @@
 
 type WikiSummary = { thumbnail?: { source?: string }; coordinates?: { lat?: number; lon?: number } };
 type WikiMedia = { items?: { type?: string; srcset?: { src: string }[] }[] };
-export type WikiInfo = { lat?: number; lng?: number; photos: string[] };
+type WikiInfo = { lat?: number; lng?: number; photos: string[] };
 
 const cache = new Map<string, WikiInfo>();
 const HEADERS = { "User-Agent": "open-intelligent-ui (https://github.com/thesysdev/open-intelligent-ui)" };

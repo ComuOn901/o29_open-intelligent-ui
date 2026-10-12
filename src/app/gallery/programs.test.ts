@@ -8,7 +8,7 @@ import { compositionPrograms } from "./composition-programs";
 import { programs } from "./programs";
 import { toolPrograms } from "./tool-programs";
 
-const library = spec as unknown as LibrarySpec;
+const library: LibrarySpec = spec;
 const parser = createParser(library.schema!, library.root);
 
 describe("the generated library spec", () => {

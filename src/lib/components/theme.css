@@ -1,7 +1,5 @@
-/* Design tokens for the component library, from the Open Intelligent UI design
-   (the feat/intelligent-ui-examples palette and main's response theme). The OIU
-   design is light only; the dark values are the same scale on a dark canvas.
-   Dark applies inside any element with data-theme="dark". */
+/* Design tokens for the component library. The design is light first; the dark
+   values are the same scale on a dark canvas, inside any element with data-theme="dark". */
 :root,
 [data-theme="light"] {
   color-scheme: light;
@@ -45,21 +43,15 @@
   /* Selection rings use the page ink, even inside a box that recolors its text. */
   --iui-ring: var(--iui-ink);
   --iui-control-gap: 8px;
-  --iui-label-gap: 12px;
   --iui-field-gap: 24px;
-  --iui-section-gap: 32px;
   --iui-action-gap: 40px;
   --iui-radius-sm: 6px;
   --iui-radius-md: 10px;
   --iui-radius-lg: 12px;
   --iui-radius-xl: 16px;
   --iui-radius-2xl: 20px;
-  /* ChatGPT-style token extras (4px spacing base, subtle borders, photo placeholders) */
-  --iui-spacing: 4px;
-  --iui-border-subtle: #f0f0f0;
   --iui-photo-empty: #edf5f8;
   --iui-photo-empty-icon: #c4d5de;
-  --iui-selected: #f1f6fa;
 }
 
 [data-theme="dark"] {
@@ -100,8 +92,6 @@
   --iui-chart-6: #5fb3bd;
   --iui-map-water: #1d3540;
   --iui-ring: var(--iui-ink);
-  --iui-border-subtle: #2e2e2e;
   --iui-photo-empty: #26302f;
   --iui-photo-empty-icon: #4a5a60;
-  --iui-selected: #1f2a33;
 }

@@ -1,7 +1,10 @@
 {
-  "name": "openui-self-hosted",
+  "name": "open-intelligent-ui",
   "version": "0.1.1",
   "private": true,
+  "engines": {
+    "node": ">=24"
+  },
   "scripts": {
     "generate": "openui generate src/lib/library.ts --spec --out src/generated/spec.json",
     "prompt": "openui generate src/lib/library.ts --out src/generated/system-prompt.txt --prompt-options promptOptions && openui generate src/lib/library.ts --out src/generated/dashboard-system-prompt.txt --prompt-options dashboardPromptOptions && rm -f src/generated/*system-prompt.spec.json",

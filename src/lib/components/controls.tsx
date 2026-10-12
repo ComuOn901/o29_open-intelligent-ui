@@ -47,8 +47,7 @@ function Field({ label, children: content }: { label?: string; children: ReactNo
   );
 }
 
-// ─── Actions ────────────────────────────────────────────────────────────────
-
+// Actions
 export const Button = defineComponent({
   name: "Button",
   props: z.object({
@@ -160,8 +159,7 @@ export const Pressable = defineComponent({
   },
 });
 
-// ─── Inputs ─────────────────────────────────────────────────────────────────
-
+// Inputs
 export const Input = defineComponent({
   name: "Input",
   props: z.object({

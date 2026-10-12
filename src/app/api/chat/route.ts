@@ -18,15 +18,13 @@ import type { ResponseInputItem } from "openai/resources/responses/responses";
 // the model's text is relayed as Responses events, so the browser stream is
 // the same for both. The output is not corrected.
 //
-// Neither gets an image search tool: Image finds its own photo for its query.
+// Neither gets an image search tool: SearchImage finds its own photo for its query.
 
-// lang-core types schema.$defs as component schemas only, so the ActionExpression
-// def (an anyOf) in the generated spec needs a cast.
-const librarySpec = spec as unknown as LibrarySpec;
+const librarySpec: LibrarySpec = spec;
 
 // Low effort answers about five times sooner with the same quality of UI;
 // LLM_REASONING_EFFORT=default sends no effort at all (the model's own default).
-const effortSetting = process.env.LLM_REASONING_EFFORT ?? process.env.REASONING_EFFORT ?? "low";
+const effortSetting = process.env.LLM_REASONING_EFFORT ?? "low";
 const effort = effortSetting === "default" || effortSetting === "" ? undefined : (effortSetting as ReasoningEffort);
 
 const useOllama = process.env.MODEL_PROVIDER === "ollama" || !!process.env.OLLAMA_MODEL;
@@ -57,7 +55,7 @@ const backend = direct
       connect: () => new OpenAI({ apiKey: process.env.THESYS_API_KEY, baseURL: process.env.THESYS_BASE_URL ?? "https://api.thesys.dev/v1/embed" }),
       missingConfig: process.env.THESYS_API_KEY
         ? undefined
-        : "THESYS_API_KEY is not set. Add it to .env.local, or set LLM_BASE_URL, LLM_API_KEY and LLM_MODEL to use any OpenAI-compatible API.",
+        : "THESYS_API_KEY is not set. Add it to .env, or set LLM_BASE_URL, LLM_API_KEY and LLM_MODEL to use any OpenAI-compatible API.",
     };
 
 // Created on first request so the app builds without any keys set.

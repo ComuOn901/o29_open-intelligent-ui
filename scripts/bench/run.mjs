@@ -55,7 +55,7 @@ const stamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
 const out = path.resolve(opt.out ?? path.join(root, "bench-out", `${label}-${stamp}`));
 mkdirSync(path.join(out, "answers"), { recursive: true });
 
-// ── Prompts, system prompts and the library ──────────────────────────────────
+// Prompts, system prompts and the library
 let prompts = JSON.parse(readFileSync(path.join(root, "scripts/bench/prompts.json"), "utf8"));
 if (opt.only) prompts = prompts.filter((p) => opt.only.split(",").includes(p.id));
 if (opt.kind) prompts = prompts.filter((p) => p.kind === opt.kind);
@@ -80,7 +80,7 @@ const known = {
   },
 };
 
-// ── Answers ──────────────────────────────────────────────────────────────────
+// Answers
 /** The program in a reply: the first fenced block if there is one, else the whole text. */
 function extractProgram(text) {
   const fence = /```[\w-]*\n([\s\S]*?)```/.exec(text);
@@ -133,7 +133,7 @@ async function pool(items, size, fn) {
   return results;
 }
 
-// ── Checks ───────────────────────────────────────────────────────────────────
+// Checks
 /** @names outside string literals; any the library and built-ins do not have are flagged. */
 function callNames(program) {
   const code = program.replace(/"(?:[^"\\]|\\.)*"/g, '""');
@@ -160,7 +160,7 @@ function check(program) {
   };
 }
 
-// ── Run ──────────────────────────────────────────────────────────────────────
+// Run
 const fakes = offline ? await savedAnswers() : null;
 console.log(`${prompts.length} prompts → ${out}`);
 const entries = await pool(prompts, offline ? prompts.length : Number(opt.concurrency), async (prompt) => {
@@ -187,7 +187,7 @@ const entries = await pool(prompts, offline ? prompts.length : Number(opt.concur
   return entry;
 });
 
-// ── Screenshots ──────────────────────────────────────────────────────────────
+// Screenshots
 if (!opt["no-shots"]) {
   const require = createRequire(import.meta.url);
   const { chromium } = require(process.env.PLAYWRIGHT_CORE ?? "playwright-core");
@@ -226,7 +226,7 @@ if (!opt["no-shots"]) {
   await browser.close();
 }
 
-// ── Report ───────────────────────────────────────────────────────────────────
+// Report
 const done = entries.filter((e) => e.check);
 const summary = {
   model: opt.fake ? "fake (hand-written gallery programs)" : opt.answers ? `saved answers in ${opt.answers}` : opt.model,

@@ -17,8 +17,7 @@ type Render = (value: unknown) => ReactNode;
 const renderSlot = (value: unknown, renderNode: Render) =>
   typeof value === "string" || typeof value === "number" ? inline(String(value)) : renderNode(Array.isArray(value) ? value.flat() : value);
 
-// ─── Carousel ───────────────────────────────────────────────────────────────
-
+// Carousel
 export const Carousel = defineComponent({
   name: "Carousel",
   props: z.object({ children, itemWidth: z.number().optional(), gap: z.number().optional() }),
@@ -66,8 +65,7 @@ export const Carousel = defineComponent({
   },
 });
 
-// ─── Popover ────────────────────────────────────────────────────────────────
-
+// Popover
 export const Popover = defineComponent({
   name: "Popover",
   props: z.object({ trigger: slot, content: slot }),
@@ -123,8 +121,7 @@ export const Popover = defineComponent({
   },
 });
 
-// ─── Code, quote, math ──────────────────────────────────────────────────────
-
+// Code, quote, math
 export const Code = defineComponent({
   name: "Code",
   props: z.object({ code: z.string(), language: z.string().optional() }),
@@ -177,8 +174,7 @@ export const MathBlock = defineComponent({
   },
 });
 
-// ─── Media ──────────────────────────────────────────────────────────────────
-
+// Media
 const YT = /(?:youtu\.be\/|[?&]v=|\/embed\/|\/shorts\/)([\w-]{11})|^([\w-]{11})$/;
 
 export const YouTube = defineComponent({
@@ -204,8 +200,7 @@ export const YouTube = defineComponent({
   },
 });
 
-// ─── Play ───────────────────────────────────────────────────────────────────
-
+// Play
 export const Flashcard = defineComponent({
   name: "Flashcard",
   props: z.object({ front: slot, back: slot, hint: z.string().optional() }),
