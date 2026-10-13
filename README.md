@@ -35,8 +35,9 @@ The dev-only page `/gallery` renders hand-written programs: a working answer for
 Requires Node 24.
 
 ```bash
-cp .env.example .env   # add your THESYS_API_KEY
+cp .env.example .env
 npm install
+npm run generate:apiKey   # writes THESYS_API_KEY to .env
 npm run dev
 ```
 
