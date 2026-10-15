@@ -18,7 +18,7 @@ export const Title = defineComponent({
     size: z.enum(["sm", "md", "lg", "xl", "2xl", "3xl"]).optional(),
     color: color.optional(),
   }),
-  description: "Heading; lg for a card title, 2xl for a big number.",
+  description: "Heading; md for a card title, lg for a section, 2xl for a big number.",
   component: ({ props }) => {
     const sizeName = props.size ?? "md";
     return (
