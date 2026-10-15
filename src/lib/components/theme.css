@@ -26,6 +26,11 @@
   --iui-range-track: color-mix(in srgb, var(--iui-ink) 6%, transparent);
   --iui-range-thumb: var(--iui-ink);
   --iui-focus: var(--iui-ink);
+  /* Frosted controls over maps and photos. */
+  --iui-glass: color-mix(in srgb, var(--iui-canvas) 70%, transparent);
+  --iui-glass-hover: color-mix(in srgb, var(--iui-canvas) 85%, transparent);
+  --iui-glass-ring: rgb(255 255 255 / 70%);
+  --iui-glass-ring-hover: rgb(255 255 255 / 85%);
   --iui-shadow: 0 4px 20px rgb(0 0 0 / 6%);
   --iui-shadow-sm: 0 1px 3px rgb(0 0 0 / 5%);
   --iui-info: #6b5631;
@@ -100,6 +105,10 @@
   --iui-badge-purple-soft: rgb(160 130 240 / 14%);
   --iui-badge-pink: #eeaacb;
   --iui-badge-pink-soft: rgb(230 130 180 / 14%);
+  --iui-glass: rgb(28 28 30 / 70%);
+  --iui-glass-hover: rgb(40 40 42 / 82%);
+  --iui-glass-ring: rgb(255 255 255 / 12%);
+  --iui-glass-ring-hover: rgb(255 255 255 / 18%);
   --iui-chart-1: #3d9dff;
   --iui-chart-2: #22bf91;
   --iui-chart-3: #a07cff;

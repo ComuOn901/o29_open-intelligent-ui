@@ -10,6 +10,7 @@ import {
   useThemeModePreference,
 } from "@openuidev/react-ui";
 import type { ActionEvent } from "@openuidev/react-lang";
+import { useEffect } from "react";
 import { Compass, MapPinned, TentTree, UtensilsCrossed } from "lucide-react";
 import { runLibraryAction } from "@/lib/actions";
 import { localChatStorage, SaveMessages } from "@/lib/chat-storage";
@@ -41,6 +42,12 @@ export default function Home() {
   // Follows the system theme until the footer toggle is first used, then
   // remembers the choice.
   const { setPreference, mode } = useThemeModePreference();
+
+  // Mirror the resolved mode onto <html>, so the components' dark tokens also
+  // apply while the theme follows the system.
+  useEffect(() => {
+    document.documentElement.setAttribute("data-openui-theme", mode);
+  }, [mode]);
 
   return (
     <div className="chat-shell">
