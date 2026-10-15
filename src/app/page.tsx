@@ -74,7 +74,7 @@ export default function Home() {
         componentLibrary={library}
         onAction={onAction}
         agentName="OpenUI"
-        logoUrl="/shiro-face.svg"
+        logoUrl={withBase("/shiro-face.svg")}
         theme={{ mode }}
         starters={starters}
       >
@@ -83,7 +83,7 @@ export default function Home() {
         </AgentInterface.SidebarFooter>
         <AgentInterface.ThreadHeader showChatTitle={false} />
         <AgentInterface.Welcome
-          image={<img src="/shiro-woodworker.svg" alt="" className="welcome-mascot" />}
+          image={<img src={withBase("/shiro-woodworker.svg")} alt="" className="welcome-mascot" />}
           title="What can I help with?"
           starterVariant="card"
           glowAnimation
