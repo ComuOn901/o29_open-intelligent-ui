@@ -54,8 +54,8 @@
       "description": "Field or group label."
     },
     "Badge": {
-      "signature": "Badge(text: string, color?: \"neutral\" | \"info\" | \"success\" | \"warning\" | \"danger\" | \"purple\" | \"pink\")",
-      "description": ""
+      "signature": "Badge(text: string, color?: \"neutral\" | \"info\" | \"success\" | \"warning\" | \"danger\" | \"purple\" | \"pink\", icon?: string)",
+      "description": "Pill tag; icon is an optional leading lucide name."
     },
     "Link": {
       "signature": "Link(text: string, url: string)",
@@ -1177,12 +1177,16 @@
               "purple",
               "pink"
             ]
+          },
+          "icon": {
+            "type": "string"
           }
         },
         "required": [
           "text"
         ],
-        "additionalProperties": false
+        "additionalProperties": false,
+        "description": "Pill tag; icon is an optional leading lucide name."
       },
       "Link": {
         "type": "object",
