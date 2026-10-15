@@ -24,7 +24,7 @@ export function vectorStyle(dark: boolean): StyleSpecification {
   return {
     version: 8,
     glyphs: "https://tiles.openfreemap.org/fonts/{fontstack}/{range}.pbf",
-    sources: { places: { type: "vector", url: "https://tiles.openfreemap.org/planet", attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> · <a href="https://openfreemap.org">OpenFreeMap</a>' } },
+    sources: { places: { type: "vector", url: "https://tiles.openfreemap.org/planet", attribution: '<a href="https://openfreemap.org">OpenFreeMap</a> © <a href="https://www.openmaptiles.org">OpenMapTiles</a> · Data from <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>' } },
     layers: [
       { id: "background", type: "background", paint: { "background-color": c.background } },
       { id: "landcover", type: "fill", source: "places", "source-layer": "landcover", filter: ["in", "class", "wood", "grass"], paint: { "fill-color": c.green, "fill-opacity": 0.8 } },

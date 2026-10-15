@@ -17,7 +17,7 @@ export async function GET(req: Request) {
   let route = cache.get(key);
   if (!route) {
     try {
-      const response = await fetch(`https://router.project-osrm.org/route/v1/driving/${key}?overview=full&geometries=geojson&steps=false`, { signal: AbortSignal.timeout(10000) });
+      const response = await fetch(`https://router.project-osrm.org/route/v1/driving/${key}?overview=full&geometries=geojson&steps=false`, { headers: { "User-Agent": "open-intelligent-ui (https://github.com/thesysdev/open-intelligent-ui)" }, signal: AbortSignal.timeout(10000) });
       if (!response.ok) throw new Error(`OSRM ${response.status}`);
       const data: { code?: string; routes?: { geometry?: { coordinates?: [number, number][] } }[] } = await response.json();
       const coordinates = data.routes?.[0]?.geometry?.coordinates ?? [];

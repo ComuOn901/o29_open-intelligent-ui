@@ -13,7 +13,9 @@ async function query(host: string, params: Record<string, string>): Promise<Page
   const url = `https://${host}/w/api.php?${new URLSearchParams({ action: "query", format: "json", formatversion: "2", ...params })}`;
   const response = await fetch(url, { headers: HEADERS, signal: AbortSignal.timeout(8000) });
   if (!response.ok) throw new Error(`${host} ${response.status}`);
-  const data: { query?: { pages?: Page[] } } = await response.json();
+  const data: { error?: unknown; query?: { pages?: Page[] } } = await response.json();
+  // A rate limit comes back as 200 with an error body: throw so "no photos" is not cached for a day.
+  if (data.error) throw new Error(`${host} error`);
   return (data.query?.pages ?? []).sort((a, b) => (a.index ?? 0) - (b.index ?? 0));
 }
 

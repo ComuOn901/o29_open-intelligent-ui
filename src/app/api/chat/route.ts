@@ -64,10 +64,12 @@ let client: OpenAI | undefined;
 
 const MAX_ITEMS = 60;
 const MAX_BODY_BYTES = 1_000_000;
+const MAX_OUTPUT_TOKENS = 16_000;
 
 // The browser sends the whole conversation each turn. Keep only user and
 // assistant text: earlier tool calls already ran on the backend, and
-// trusted instructions never come from the browser.
+// trusted instructions never come from the browser. The chat has no
+// attachments, so image and file parts are dropped rather than sent on.
 function toInput(messages: unknown): ResponseInputItem[] | null {
   if (!Array.isArray(messages)) return null;
   const items = messages.flatMap((item): ResponseInputItem[] => {
@@ -75,7 +77,8 @@ function toInput(messages: unknown): ResponseInputItem[] | null {
     const { role, content } = item as { role?: unknown; content?: unknown };
     if (role !== "user" && role !== "assistant") return [];
     if (typeof content !== "string" && !Array.isArray(content)) return [];
-    return [{ role, content } as ResponseInputItem];
+    const text = typeof content === "string" ? content : content.map((part) => (typeof part?.text === "string" ? part.text : "")).join("");
+    return [{ role, content: text } as ResponseInputItem];
   });
   return items.length ? items.slice(-MAX_ITEMS) : null;
 }
@@ -135,6 +138,8 @@ export async function POST(req: Request) {
               instructions: backend.instructions,
               input,
               store: false,
+              // The longest answers (a game in HtmlView) are about 2,500 tokens; this only stops runaways.
+              max_output_tokens: MAX_OUTPUT_TOKENS,
               ...(effort ? { reasoning: { effort } } : {}),
               stream: true,
             },
@@ -164,7 +169,20 @@ export async function POST(req: Request) {
   const body = new ReadableStream<Uint8Array>({
     async start(controller) {
       try {
-        for await (const event of events) controller.enqueue(encoder.encode(`data: ${JSON.stringify(event)}\n\n`));
+        for await (const event of events) {
+          // response.created, .in_progress and .completed each repeat the whole system prompt
+          // (about 58 KB) and the account's safety_identifier; the page needs neither.
+          const response = (event as { response?: Record<string, unknown> }).response;
+          if (response) {
+            delete response.instructions;
+            delete response.safety_identifier;
+          }
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify(event)}\n\n`));
+          // The browser adapter ignores response.incomplete (the output cap was hit), so say so.
+          if ((event as { type?: string }).type === "response.incomplete") {
+            controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: "error", message: "The answer was cut off. Try a shorter request." })}\n\n`));
+          }
+        }
       } catch (err) {
         const message = err instanceof Error ? err.message : String(err);
         controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: "error", message })}\n\n`));

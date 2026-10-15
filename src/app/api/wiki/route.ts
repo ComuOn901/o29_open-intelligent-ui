@@ -10,7 +10,7 @@ const HEADERS = { "User-Agent": "open-intelligent-ui (https://github.com/thesysd
 
 // A missing article is a real answer (cached); any other failure is retried next time.
 async function get(url: string) {
-  const response = await fetch(url, { headers: HEADERS });
+  const response = await fetch(url, { headers: HEADERS, signal: AbortSignal.timeout(8000) });
   if (response.status === 404) return {};
   if (!response.ok) throw new Error(`Wikipedia ${response.status}`);
   return response.json();

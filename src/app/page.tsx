@@ -13,8 +13,20 @@ import type { ActionEvent } from "@openuidev/react-lang";
 import { runLibraryAction } from "@/lib/actions";
 import { withBase } from "@/lib/base-path";
 import { localChatStorage, SaveMessages } from "@/lib/chat-storage";
+import { webUrl } from "@/lib/components/style";
 import { library } from "@/lib/library";
 import { responseTheme } from "@/lib/response-theme";
+
+// The chat opens @OpenUrl with a plain window.open of whatever URL the model wrote, and on
+// openui.com this page shares its origin with the rest of the site. So only http(s) URLs open,
+// in a new tab without an opener; a javascript: or data: URL does nothing.
+if (typeof window !== "undefined") {
+  const open = window.open.bind(window);
+  window.open = (url?: string | URL) => {
+    const safe = webUrl(String(url ?? ""));
+    return safe ? open(safe, "_blank", "noopener,noreferrer") : null;
+  };
+}
 
 const starters = [
   { displayText: "Plan a day out", prompt: "I'm in San Francisco for a day, plan a sightseeing route for me", icon: null },
