@@ -24,7 +24,7 @@ const CSP = [
 ].join("; ");
 
 const MIN_HEIGHT = 80;
-const MAX_HEIGHT = 1200;
+const MAX_HEIGHT = 2400;
 const AUTO_START = 360;
 
 // Reports the content height to the parent, so the view fits the page. The
