@@ -63,7 +63,7 @@
 .iui-badge { display: inline-flex; align-items: center; align-self: flex-start; gap: 5px; width: fit-content; max-width: 100%; min-height: 26px; padding: 3px 10px; border-radius: 999px; background: var(--iui-badge-neutral-soft); color: var(--iui-ink); font-size: 13px; line-height: 18px; font-weight: 560; white-space: nowrap; }
 .iui-badge > svg { flex: none; margin-left: -2px; }
 .iui-row > .iui-badge { align-self: center; flex: none; }
-/* Badges stay calm: info is cream, and the other tones are soft tints with same-hue text. */
+/* Badges stay calm: info is the neutral grey pill, and the other tones are soft tints with same-hue text. */
 .iui-badge-info { background: var(--iui-info-soft); color: var(--iui-info); }
 .iui-badge-success { background: var(--iui-badge-success-soft); color: var(--iui-badge-success); }
 .iui-badge-warning { background: var(--iui-badge-warning-soft); color: var(--iui-badge-warning); }

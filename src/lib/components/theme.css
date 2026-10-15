@@ -33,8 +33,8 @@
   --iui-glass-ring-hover: rgb(255 255 255 / 85%);
   --iui-shadow: 0 4px 20px rgb(0 0 0 / 6%);
   --iui-shadow-sm: 0 1px 3px rgb(0 0 0 / 5%);
-  --iui-info: #6b5631;
-  --iui-info-soft: #fbf6ea;
+  --iui-info: var(--iui-ink);
+  --iui-info-soft: color-mix(in srgb, var(--iui-ink) 6%, transparent);
   --iui-success: #00805d;
   --iui-success-soft: #edf9f2;
   --iui-warning: #8a5300;
@@ -89,8 +89,8 @@
   color-scheme: dark;
   --iui-shadow: 0 4px 20px rgb(0 0 0 / 35%);
   --iui-shadow-sm: 0 1px 3px rgb(0 0 0 / 30%);
-  --iui-info: #e4d3a8;
-  --iui-info-soft: #2b261b;
+  --iui-info: var(--iui-ink);
+  --iui-info-soft: color-mix(in srgb, var(--iui-ink) 6%, transparent);
   --iui-success: #5bcf9c;
   --iui-success-soft: #13291f;
   --iui-warning: #f0b84f;
