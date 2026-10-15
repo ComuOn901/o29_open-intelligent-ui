@@ -11,6 +11,7 @@ import {
 } from "@openuidev/react-ui";
 import type { ActionEvent } from "@openuidev/react-lang";
 import { runLibraryAction } from "@/lib/actions";
+import { withBase } from "@/lib/base-path";
 import { localChatStorage, SaveMessages } from "@/lib/chat-storage";
 import { library } from "@/lib/library";
 import { responseTheme } from "@/lib/response-theme";
@@ -23,7 +24,7 @@ const starters = [
 ];
 
 const llm = fetchLLM({
-  url: "/api/chat",
+  url: withBase("/api/chat"),
   streamAdapter: openAIResponsesAdapter(),
   messageFormat: openAIConversationMessageFormat,
 });

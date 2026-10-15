@@ -4,6 +4,7 @@ import { defineComponent } from "@openuidev/react-lang";
 import { ImageIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { z } from "zod/v4";
+import { withBase } from "../base-path";
 import { Glyph } from "./glyph";
 import { color, cx, fg, radius, radiusSchema, webUrl } from "./style";
 
@@ -43,8 +44,8 @@ function searchImages(query: string): Promise<string[]> {
   let request = searches.get(query);
   if (!request) {
     request = Promise.all([
-      getJson(`/api/wiki?title=${encodeURIComponent(query)}`).catch((): Record<string, unknown> => ({})),
-      getJson(`/api/image-search?q=${encodeURIComponent(query)}`).catch((): Record<string, unknown> => ({})),
+      getJson(withBase(`/api/wiki?title=${encodeURIComponent(query)}`)).catch((): Record<string, unknown> => ({})),
+      getJson(withBase(`/api/image-search?q=${encodeURIComponent(query)}`)).catch((): Record<string, unknown> => ({})),
     ]).then(([wiki, found]) => {
       const all = [...urls(wiki.photos), ...urls(found.images)];
       if (!all.length) searches.delete(query);

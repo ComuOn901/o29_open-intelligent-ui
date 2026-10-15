@@ -1,5 +1,6 @@
 import spec from "@/generated/spec.json";
 import { promptOptions } from "@/lib/prompt-options";
+import { hasAllowedOrigin } from "@/lib/same-origin";
 import { generateSystemPrompt, type LibrarySpec } from "@openuidev/lang-core";
 import OpenAI from "openai";
 import type { ReasoningEffort } from "openai/resources/shared";
@@ -104,6 +105,8 @@ async function* asResponsesEvents(stream: AsyncIterable<ChatCompletionChunk>) {
 }
 
 export async function POST(req: Request) {
+  // No sign-in, so only the app's own pages may spend the Gateway key (see same-origin.ts).
+  if (!hasAllowedOrigin(req)) return Response.json({ error: { message: "Not allowed." } }, { status: 403 });
   if (!req.headers.get("content-type")?.includes("application/json")) {
     return Response.json({ error: { message: "expected application/json" } }, { status: 415 });
   }
