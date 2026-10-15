@@ -57,6 +57,7 @@ export default function Home() {
         <AgentInterface.SidebarFooter>
           <AgentInterface.ThemeModeToggle mode={mode} onModeChange={setPreference} />
         </AgentInterface.SidebarFooter>
+        <AgentInterface.ThreadHeader showChatTitle={false} />
         <AgentInterface.Welcome
           image={<img src="/shiro-woodworker.svg" alt="" className="welcome-mascot" />}
           title="What can I help with?"
