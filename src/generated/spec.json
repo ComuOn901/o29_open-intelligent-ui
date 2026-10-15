@@ -39,7 +39,7 @@
     },
     "Title": {
       "signature": "Title(text: string, size?: \"sm\" | \"md\" | \"lg\" | \"xl\" | \"2xl\" | \"3xl\", color?: Color)",
-      "description": "Heading; lg for a card title, 2xl for a big number."
+      "description": "Heading; md for a card title, lg for a section, 2xl for a big number."
     },
     "Text": {
       "signature": "Text(text: string | Node[], size?: \"xs\" | \"sm\" | \"md\" | \"lg\", color?: Color, weight?: \"normal\" | \"medium\" | \"semibold\", italic?: boolean, lineThrough?: boolean, tabularNums?: boolean, maxLines?: number)",
@@ -54,8 +54,8 @@
       "description": "Field or group label."
     },
     "Badge": {
-      "signature": "Badge(text: string, color?: \"neutral\" | \"info\" | \"success\" | \"warning\" | \"danger\" | \"purple\" | \"pink\")",
-      "description": ""
+      "signature": "Badge(text: string, color?: \"neutral\" | \"info\" | \"success\" | \"warning\" | \"danger\" | \"purple\" | \"pink\", icon?: string)",
+      "description": "Pill tag; icon is an optional leading lucide name."
     },
     "Link": {
       "signature": "Link(text: string, url: string)",
@@ -1076,7 +1076,7 @@
           "text"
         ],
         "additionalProperties": false,
-        "description": "Heading; lg for a card title, 2xl for a big number."
+        "description": "Heading; md for a card title, lg for a section, 2xl for a big number."
       },
       "Text": {
         "type": "object",
@@ -1177,12 +1177,16 @@
               "purple",
               "pink"
             ]
+          },
+          "icon": {
+            "type": "string"
           }
         },
         "required": [
           "text"
         ],
-        "additionalProperties": false
+        "additionalProperties": false,
+        "description": "Pill tag; icon is an optional leading lucide name."
       },
       "Link": {
         "type": "object",

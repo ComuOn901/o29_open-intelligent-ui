@@ -4,6 +4,7 @@ import { defineComponent } from "@openuidev/react-lang";
 import { ArrowUpRight } from "lucide-react";
 import { Fragment } from "react";
 import { z } from "zod/v4";
+import { Glyph } from "./glyph";
 import { inline, MarkdownBlocks } from "./markdown";
 import { children, color, cx, fg, webUrl } from "./style";
 
@@ -17,7 +18,7 @@ export const Title = defineComponent({
     size: z.enum(["sm", "md", "lg", "xl", "2xl", "3xl"]).optional(),
     color: color.optional(),
   }),
-  description: "Heading; lg for a card title, 2xl for a big number.",
+  description: "Heading; md for a card title, lg for a section, 2xl for a big number.",
   component: ({ props }) => {
     const sizeName = props.size ?? "md";
     return (
@@ -91,9 +92,15 @@ export const Badge = defineComponent({
   props: z.object({
     text: z.string(),
     color: z.enum(["neutral", "info", "success", "warning", "danger", "purple", "pink"]).optional(),
+    icon: z.string().optional(),
   }),
-  description: "",
-  component: ({ props }) => <span className={`iui-badge iui-badge-${props.color ?? "neutral"}`}>{str(props.text)}</span>,
+  description: "Pill tag; icon is an optional leading lucide name.",
+  component: ({ props }) => (
+    <span className={`iui-badge iui-badge-${props.color ?? "neutral"}`}>
+      {props.icon ? <Glyph name={props.icon} size={14} /> : null}
+      {str(props.text)}
+    </span>
+  ),
 });
 
 export const Link = defineComponent({
@@ -153,11 +160,12 @@ export const List = defineComponent({
         {items.map((item, i) => {
           if (item == null) return null;
           const custom = isItem(item) && typeof item.props.marker === "string" && item.props.marker ? item.props.marker : null;
+          const step = !!custom && /^[0-9A-Za-z]{1,2}$/.test(custom);
           const rich = isItem(item) && (!!item.props.description || !!item.props.children);
           return (
             <li key={i} className={cx(rich && "iui-list-rich")}>
-              <span className={cx("iui-list-marker", custom && "iui-list-marker-text")} aria-hidden={!custom}>
-                {custom ?? (marker === "number" ? i + 1 : null)}
+              <span className={cx("iui-list-marker", custom && (step ? "iui-list-marker-chip" : "iui-list-marker-text"))} aria-hidden={!custom}>
+                {step ? <span>{custom}</span> : custom ?? (marker === "number" ? i + 1 : null)}
               </span>
               {isItem(item) ? renderNode(item) : <div className="iui-list-body">{inline(str(item))}</div>}
             </li>

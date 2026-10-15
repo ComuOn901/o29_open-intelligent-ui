@@ -59,6 +59,8 @@ const cases: Record<string, [string, unknown][]> = {
     ['@Format(1, "currency", 2, "nope")', "$1.00"],
     ['@Format(45, "percent")', "45%"],
     ['@Format(12.345, "percent", 1)', "12.3%"],
+    ['@Format(600, "number", 1)', "600"],
+    ['@Format(12, "currency", 2)', "$12.00"],
     ['@Format(1234567, "compact")', "1.2M"],
     ['@Format(1234567, "compact", null, "USD")', "$1.2M"],
     ['@Format(999, "compact")', "999"],
