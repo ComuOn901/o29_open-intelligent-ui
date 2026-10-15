@@ -23,6 +23,18 @@
 .iui-flow > * + :is(.iui-card, .iui-map-slot, .iui-chart, .iui-grid, .iui-table-scroll, .iui-html-view, .iui-carousel, .iui-markdown, .iui-codeblock, .iui-video) { margin-top: 20px; }
 .iui-flow > * + .iui-title:is(.iui-title-sm, .iui-title-md) { margin-top: 24px; }
 
+/* Inside a card or a grid cell the rhythm tightens: 16px before a heading,
+   card-sized titles (18/24) and 15/22 body text. */
+:is(.iui-card.iui-flow, .iui-grid > .iui-flow, .iui-carousel-item > .iui-flow) > * + .iui-title { margin-top: 16px; }
+:is(.iui-card, .iui-grid > .iui-flow, .iui-carousel-item > .iui-flow) > :is(.iui-title-lg, .iui-title-xl, .iui-title-2xl, .iui-title-3xl) { font-size: 18px; line-height: 24px; letter-spacing: -0.3px; }
+:is(.iui-card, .iui-grid > .iui-flow, .iui-carousel-item > .iui-flow) > .iui-text:not(.iui-text-xs, .iui-text-sm, .iui-text-lg) { font-size: 15px; line-height: 22px; }
+/* Group rhythm: a photo sits 12px above its title, tags 8px under a title,
+   12px between a tag row and the text after it, 8px between paragraphs. */
+.iui-flow > .iui-image + *, :is(.iui-card.iui-flow, .iui-grid > .iui-flow, .iui-carousel-item > .iui-flow) > .iui-image + .iui-title { margin-top: 12px; }
+.iui-flow > .iui-title + .iui-row:has(> .iui-badge) { margin-top: 8px; }
+.iui-flow > .iui-row:has(> .iui-badge) + * { margin-top: 12px; }
+.iui-flow > .iui-text + .iui-text { margin-top: 8px; }
+
 .iui-card {
   display: flex;
   flex-direction: column;
