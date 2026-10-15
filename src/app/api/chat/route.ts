@@ -59,6 +59,9 @@ const backend = direct
         : "THESYS_API_KEY is not set. Add it to .env, or set LLM_BASE_URL, LLM_API_KEY and LLM_MODEL to use any OpenAI-compatible API.",
     };
 
+// Answers stream for up to about a minute; say so, in case the project is not on Fluid compute.
+export const maxDuration = 300;
+
 // Created on first request so the app builds without any keys set.
 let client: OpenAI | undefined;
 

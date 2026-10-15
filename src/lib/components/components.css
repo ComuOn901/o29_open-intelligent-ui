@@ -45,7 +45,7 @@
 .iui-title-xl { font-size: 25px; line-height: 1.2; font-weight: 500; letter-spacing: -0.8px; }
 .iui-title-2xl { font-size: 32px; line-height: 1.15; font-weight: 500; letter-spacing: -1px; }
 .iui-title-3xl { font-size: 40px; line-height: 1.1; font-weight: 500; letter-spacing: -1.4px; }
-.iui-text { margin: 0; overflow-wrap: anywhere; line-height: 1.6; }
+.iui-text { margin: 0; overflow-wrap: anywhere; line-height: 1.6; white-space: pre-line; }
 .iui-inline { display: inline-flex; vertical-align: -0.15em; margin: 0 1px; }
 .iui-inline > .iui-badge { vertical-align: 0.1em; }
 .iui-text-xs { font-size: 12px; line-height: 1.6; }
@@ -94,6 +94,7 @@
 .iui-timeline > li:last-child { padding-bottom: 0; }
 .iui-timeline > li:not(:last-child)::after { content: ""; position: absolute; top: 1.7em; bottom: 0.15em; left: 11.5px; width: 1px; background: var(--iui-border-strong); }
 .iui-timeline.iui-list-wide > li:not(:last-child)::after { left: auto; right: calc(100% - 76px - 8px); }
+.iui-timeline.iui-list-none:not(.iui-list-wide) > li::after { content: none; }
 .iui-timeline.iui-list-bullet .iui-list-marker:empty::before { width: 9px; height: 9px; background: var(--iui-canvas); box-shadow: inset 0 0 0 2px var(--iui-ink); }
 .iui-timeline.iui-list-wide .iui-list-marker-text::after { content: ""; position: absolute; left: calc(76px + 4px); top: 0.55em; width: 9px; height: 9px; border-radius: 50%; background: var(--iui-canvas); box-shadow: inset 0 0 0 2px var(--iui-ink); }
 .iui-timeline.iui-list-wide > li { grid-template-columns: 76px minmax(0, 1fr); column-gap: 24px; }
@@ -154,7 +155,7 @@
 
 /* Fields */
 .iui-field { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
-.iui-input { width: 100%; min-width: 0; min-height: 42px; padding: 10px 12px; border: 1px solid var(--iui-border-strong); border-radius: var(--iui-radius-md); background: var(--iui-canvas); color: var(--iui-ink); font-size: 15px; line-height: 1.4; font-variant-numeric: tabular-nums; outline: none; transition: border-color .15s, box-shadow .15s; }
+.iui-input { width: 100%; min-width: 0; min-height: 42px; padding: 10px 12px; border: 1px solid var(--iui-border-strong); border-radius: var(--iui-radius-md); background: var(--iui-canvas); color: var(--iui-ink); font-size: 16px; line-height: 1.4; font-variant-numeric: tabular-nums; outline: none; transition: border-color .15s, box-shadow .15s; }
 .iui-input::placeholder { color: var(--iui-faint); opacity: 1; }
 .iui-input:focus, .iui-input:focus-visible { border-color: var(--iui-focus); box-shadow: 0 0 0 2px color-mix(in srgb, var(--iui-focus) 18%, transparent); outline: none; }
 .iui-textarea { min-height: 96px; resize: vertical; }

@@ -122,6 +122,8 @@ export const MapView = defineComponent({
       const instance = new lib.Map({
         container: surface.current, style: vectorStyle(dark), center: [0, 20], zoom: 1, minZoom: 0,
         scrollZoom: false, dragRotate: false, pitchWithRotate: false, touchPitch: false, attributionControl: false,
+        // On a phone a one-finger swipe scrolls the answer instead of getting stuck on the map.
+        cooperativeGestures: window.matchMedia("(pointer: coarse)").matches,
       });
       instance.touchZoomRotate.disableRotation();
       instance.addControl(new lib.AttributionControl({ compact: false }), "bottom-left");
