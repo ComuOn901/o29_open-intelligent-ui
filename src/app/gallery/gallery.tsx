@@ -8,7 +8,7 @@ import { runLibraryAction } from "@/lib/actions";
 import { webUrl } from "@/lib/components/style";
 import { demoTools } from "@/lib/demo-data";
 import { library } from "@/lib/library";
-import { exampleDashboard, exampleShoppingList, exampleTrip } from "@/lib/prompt-options";
+import { exampleDashboard, exampleShoppingList, exampleSteps, exampleTrip } from "@/lib/prompt-options";
 import { compositionPrograms } from "./composition-programs";
 import { programs, type Program } from "./programs";
 import { toolPrograms } from "./tool-programs";
@@ -17,7 +17,8 @@ import { toolPrograms } from "./tool-programs";
 const promptExamples: Program[] = [
   { id: "example-list", title: "Prompt example: shopping list", note: "Example 1 of the working-tool prompt.", code: exampleShoppingList },
   { id: "example-trip", title: "Prompt example: a composed trip", note: "Example 2 of the prompt: composition with photos, rows and a form.", code: exampleTrip },
-  { id: "example-dashboard", title: "Prompt example: dashboard", note: "Example 3, shown when the demo data tools are in the prompt.", code: exampleDashboard },
+  { id: "example-steps", title: "Prompt example: steps with drawings", note: "Example 3 of the prompt: a drawing for each step, driven by $step.", code: exampleSteps },
+  { id: "example-dashboard", title: "Prompt example: dashboard", note: "Example 4, shown when the demo data tools are in the prompt.", code: exampleDashboard },
 ];
 
 const sections = [

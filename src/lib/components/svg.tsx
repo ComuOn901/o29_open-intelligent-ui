@@ -45,7 +45,7 @@ export const Svg = defineComponent({
     width: length.optional(),
     height: length.optional(),
   }),
-  description: "Drawing that scales to its width; its shapes take expressions, so state can move them.",
+  description: "A drawing for steps, parts, mechanisms, diagrams and layouts. Scales to its width; its shapes take expressions, so state can move them.",
   component: ({ props, renderNode }) => {
     const viewBox = ok(props.viewBox, /^\s*[-\d.]+(\s*[\s,]\s*[-\d.]+){3}\s*$/) ?? "0 0 100 100";
     // Without a width it fills the column, up to 1.5x the viewBox (at least 280px), so text stays in scale.

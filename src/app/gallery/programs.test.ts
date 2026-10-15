@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import spec from "@/generated/spec.json";
 import { actions } from "@/lib/actions";
 import { functions } from "@/lib/functions";
-import { exampleDashboard, exampleShoppingList, exampleTrip } from "@/lib/prompt-options";
+import { exampleDashboard, exampleShoppingList, exampleSteps, exampleTrip } from "@/lib/prompt-options";
 import { compositionPrograms } from "./composition-programs";
 import { programs } from "./programs";
 import { toolPrograms } from "./tool-programs";
@@ -28,6 +28,7 @@ const all = [
   ...toolPrograms,
   { id: "example-list", code: exampleShoppingList },
   { id: "example-trip", code: exampleTrip },
+  { id: "example-steps", code: exampleSteps },
   { id: "example-dashboard", code: exampleDashboard },
   ...programs,
   ...compositionPrograms,

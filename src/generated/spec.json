@@ -179,7 +179,7 @@
     },
     "Svg": {
       "signature": "Svg(children: Node[], viewBox: string, width?: Length, height?: Length)",
-      "description": "Drawing that scales to its width; its shapes take expressions, so state can move them."
+      "description": "A drawing for steps, parts, mechanisms, diagrams and layouts. Scales to its width; its shapes take expressions, so state can move them."
     },
     "Circle": {
       "signature": "Circle(cx: number, cy: number, r: number, fill?: Color, stroke?: Color, strokeWidth?: number, opacity?: number)",
@@ -2150,7 +2150,7 @@
           "viewBox"
         ],
         "additionalProperties": false,
-        "description": "Drawing that scales to its width; its shapes take expressions, so state can move them."
+        "description": "A drawing for steps, parts, mechanisms, diagrams and layouts. Scales to its width; its shapes take expressions, so state can move them."
       },
       "Circle": {
         "type": "object",
