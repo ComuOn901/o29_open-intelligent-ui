@@ -66,6 +66,12 @@
   --iui-map-water: #a9dff0;
   /* Selection rings use the page ink, even inside a box that recolors its text. */
   --iui-ring: var(--iui-ink);
+  /* Spacing tiers on one 4px scale: tight < inner < group < section. */
+  --iui-space-tight: 4px;
+  --iui-space-inner: 8px;
+  --iui-space-group: 12px;
+  --iui-space-group-lg: 16px;
+  --iui-space-section: 24px;
   --iui-control-gap: 8px;
   --iui-field-gap: 24px;
   --iui-action-gap: 40px;

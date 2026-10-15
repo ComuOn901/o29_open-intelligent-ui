@@ -32,8 +32,11 @@ export const Format = defineFunction({
   fn: ({ value, kind = "number", decimals, currency }) => {
     if (!Number.isFinite(value)) throw new Error("value is not a finite number");
     const d = decimals === undefined ? undefined : Math.min(Math.max(Math.trunc(decimals), 0), 10);
+    // decimals caps the digits; only currency pads to it, so 600 never reads "600.0".
     const digits = (fallbackMax: number, fallbackMin = 0) =>
-      d === undefined ? { minimumFractionDigits: fallbackMin, maximumFractionDigits: fallbackMax } : { minimumFractionDigits: d, maximumFractionDigits: d };
+      d === undefined
+        ? { minimumFractionDigits: fallbackMin, maximumFractionDigits: fallbackMax }
+        : { minimumFractionDigits: fallbackMin && d, maximumFractionDigits: d };
     switch (kind) {
       case "currency":
         return format(value, { style: "currency", currency: currencyCode(currency), ...digits(2, 2) });
