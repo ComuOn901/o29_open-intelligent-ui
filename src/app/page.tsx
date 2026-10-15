@@ -1,21 +1,21 @@
 "use client";
 import "@/lib/devtools";
 import "@openuidev/react-ui/styles/index.css";
-import "./shell.css";
 
 import {
   AgentInterface,
   fetchLLM,
   openAIConversationMessageFormat,
   openAIResponsesAdapter,
+  useThemeModePreference,
 } from "@openuidev/react-ui";
 import type { ActionEvent } from "@openuidev/react-lang";
+import { Compass, MapPinned, TentTree, UtensilsCrossed } from "lucide-react";
 import { runLibraryAction } from "@/lib/actions";
 import { withBase } from "@/lib/base-path";
 import { localChatStorage, SaveMessages } from "@/lib/chat-storage";
 import { webUrl } from "@/lib/components/style";
 import { library } from "@/lib/library";
-import { responseTheme } from "@/lib/response-theme";
 
 // The chat opens @OpenUrl with a plain window.open of whatever URL the model wrote, and on
 // openui.com this page shares its origin with the rest of the site. So only http(s) URLs open,
@@ -29,10 +29,10 @@ if (typeof window !== "undefined") {
 }
 
 const starters = [
-  { displayText: "Plan a day out", prompt: "I'm in San Francisco for a day, plan a sightseeing route for me", icon: null },
-  { displayText: "Explore a city", prompt: "Plan a relaxed afternoon exploring Lisbon, with three stops and a map", icon: null },
-  { displayText: "Find weekend ideas", prompt: "Help me find a weekend getaway from San Francisco. Compare three destinations", icon: null },
-  { displayText: "Plan a meal", prompt: "Help me plan a simple vegetarian dinner for six people", icon: null },
+  { displayText: "Plan a day out", prompt: "I'm in San Francisco for a day, plan a sightseeing route for me", icon: <MapPinned size={16} /> },
+  { displayText: "Explore a city", prompt: "Plan a relaxed afternoon exploring Lisbon, with three stops and a map", icon: <Compass size={16} /> },
+  { displayText: "Find weekend ideas", prompt: "Help me find a weekend getaway from San Francisco. Compare three destinations", icon: <TentTree size={16} /> },
+  { displayText: "Plan a meal", prompt: "Help me plan a simple vegetarian dinner for six people", icon: <UtensilsCrossed size={16} /> },
 ];
 
 const llm = fetchLLM({
@@ -51,6 +51,10 @@ function onAction(event: ActionEvent) {
 }
 
 export default function Home() {
+  // Follows the system theme until the footer toggle is first used, then
+  // remembers the choice.
+  const { setPreference, mode } = useThemeModePreference();
+
   return (
     <div className="chat-shell">
       <AgentInterface
@@ -59,11 +63,19 @@ export default function Home() {
         componentLibrary={library}
         onAction={onAction}
         agentName="OpenUI"
-        theme={{ mode: "light", lightTheme: responseTheme }}
+        logoUrl="/shiro-face.svg"
+        theme={{ mode }}
         starters={starters}
-        starterVariant="short"
       >
-        <AgentInterface.Welcome title="What can I help with?" />
+        <AgentInterface.SidebarFooter>
+          <AgentInterface.ThemeModeToggle mode={mode} onModeChange={setPreference} />
+        </AgentInterface.SidebarFooter>
+        <AgentInterface.Welcome
+          image={<img src="/shiro-woodworker.svg" alt="" className="welcome-mascot" />}
+          title="What can I help with?"
+          starterVariant="card"
+          glowAnimation
+        />
         <SaveMessages />
       </AgentInterface>
     </div>

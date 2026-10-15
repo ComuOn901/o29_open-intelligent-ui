@@ -3,8 +3,10 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { Analytics } from "./analytics";
 
+// Variable Inter (no fixed weights), so the theme's in-between weights
+// (440, 560, 640) render as set.
 const inter = Inter({
-  weight: ["400", "500", "600"],
+  subsets: ["latin"],
 });
 
 const description =

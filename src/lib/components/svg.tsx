@@ -140,7 +140,7 @@ export const SvgText = defineComponent({
       fontSize={n(props.size) ?? 12}
       fill={fg(props.fill) ?? "currentColor"}
       textAnchor={props.anchor ?? "start"}
-      fontWeight={props.weight === "semibold" ? 600 : props.weight === "medium" ? 500 : 400}
+      fontWeight={props.weight === "semibold" ? 640 : props.weight === "medium" ? 560 : 440}
       fontFamily="var(--iui-font)"
     >
       {String(props.text ?? "")}

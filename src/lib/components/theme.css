@@ -1,38 +1,57 @@
-/* Design tokens for the component library. The design is light first; the dark
-   values are the same scale on a dark canvas, inside any element with data-theme="dark". */
+/* Design tokens for the component library. Neutrals (font, text, surfaces,
+   borders) follow the OpenUI theme tokens, so components match the Agent
+   Interface in light and dark; the dark block only retunes status, chart and
+   map colors. */
 :root,
 [data-theme="light"] {
   color-scheme: light;
-  --iui-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --iui-font: var(--openui-font-body, "Inter", sans-serif);
   --iui-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  --iui-canvas: #ffffff;
-  --iui-surface: #f7f7f8;
-  --iui-surface-hover: #eeeeef;
-  --iui-surface-strong: #ececec;
-  --iui-ink: #0d0d0d;
-  --iui-ink-hover: #2f2f2f;
-  --iui-on-ink: #ffffff;
-  --iui-muted: #676767;
-  --iui-faint: #8f8f8f;
-  --iui-border: #e7e7e7;
-  --iui-border-strong: #cecece;
-  --iui-range-track: #e5e5e5;
-  --iui-range-thumb: #303030;
-  --iui-focus: #0285ff;
+  --iui-canvas: var(--openui-foreground, #ffffff);
+  /* Greys are ink at an alpha, so they stack on any surface (cards, tints, sunk
+     areas) and flip with the theme: track 4-6%, hover 5%, pressed or selected 8%,
+     borders 8-10%. */
+  --iui-hover: color-mix(in srgb, var(--iui-ink) 5%, transparent);
+  --iui-pressed: color-mix(in srgb, var(--iui-ink) 8%, transparent);
+  --iui-surface: color-mix(in srgb, var(--iui-ink) 4%, transparent);
+  --iui-surface-hover: color-mix(in srgb, var(--iui-ink) 8%, transparent);
+  --iui-surface-strong: color-mix(in srgb, var(--iui-ink) 8%, transparent);
+  --iui-ink: var(--openui-text-neutral-primary, #0d0d0d);
+  --iui-ink-hover: color-mix(in oklch, var(--iui-ink) 82%, var(--iui-canvas));
+  --iui-on-ink: var(--openui-foreground, #ffffff);
+  --iui-muted: var(--openui-text-neutral-secondary, rgb(0 0 0 / 60%));
+  --iui-faint: var(--openui-text-neutral-secondary, rgb(0 0 0 / 60%));
+  --iui-border: color-mix(in srgb, var(--iui-ink) 8%, transparent);
+  --iui-border-strong: color-mix(in srgb, var(--iui-ink) 10%, transparent);
+  --iui-range-track: color-mix(in srgb, var(--iui-ink) 6%, transparent);
+  --iui-range-thumb: var(--iui-ink);
+  --iui-focus: var(--iui-ink);
   --iui-shadow: 0 4px 20px rgb(0 0 0 / 6%);
   --iui-shadow-sm: 0 1px 3px rgb(0 0 0 / 5%);
-  --iui-info: #0068bc;
-  --iui-info-soft: #edf5ff;
+  --iui-info: #6b5631;
+  --iui-info-soft: #fbf6ea;
   --iui-success: #00805d;
   --iui-success-soft: #edf9f2;
-  --iui-warning: #946200;
-  --iui-warning-soft: #fff8e7;
+  --iui-warning: #8a5300;
+  --iui-warning-soft: #ffefc7;
   --iui-danger: #c1322c;
   --iui-danger-soft: #fff0ee;
   --iui-purple: #7040c1;
   --iui-purple-soft: #f4f0ff;
   --iui-pink: #b7377c;
   --iui-pink-soft: #fff0f6;
+  /* Badge pills: a 6% neutral, and soft tints with darker same-hue text. */
+  --iui-badge-neutral-soft: color-mix(in srgb, var(--iui-ink) 6%, transparent);
+  --iui-badge-success: #1f6b4f;
+  --iui-badge-success-soft: #e8f3ec;
+  --iui-badge-warning: #8a5300;
+  --iui-badge-warning-soft: #ffefc7;
+  --iui-badge-danger: #9f3a33;
+  --iui-badge-danger-soft: #f8e8e5;
+  --iui-badge-purple: #5d4596;
+  --iui-badge-purple-soft: #efebf7;
+  --iui-badge-pink: #94456d;
+  --iui-badge-pink-soft: #f7eaf1;
   --iui-chart-1: #0285ff;
   --iui-chart-2: #00a67d;
   --iui-chart-3: #8b5cf6;
@@ -48,32 +67,19 @@
   --iui-radius-sm: 6px;
   --iui-radius-md: 10px;
   --iui-radius-lg: 12px;
-  --iui-radius-xl: 16px;
+  --iui-radius-xl: 14px;
   --iui-radius-2xl: 20px;
-  --iui-photo-empty: #edf5f8;
-  --iui-photo-empty-icon: #c4d5de;
+  --iui-photo-empty: var(--iui-surface);
+  --iui-photo-empty-icon: var(--iui-border-strong);
 }
 
+:root[data-openui-theme="dark"],
 [data-theme="dark"] {
   color-scheme: dark;
-  --iui-canvas: #212121;
-  --iui-surface: #2a2a2a;
-  --iui-surface-hover: #333333;
-  --iui-surface-strong: #3a3a3a;
-  --iui-ink: #ececec;
-  --iui-ink-hover: #d4d4d4;
-  --iui-on-ink: #171717;
-  --iui-muted: #ababab;
-  --iui-faint: #8c8c8c;
-  --iui-border: #383838;
-  --iui-border-strong: #4d4d4d;
-  --iui-range-track: #3a3a3a;
-  --iui-range-thumb: #ececec;
-  --iui-focus: #4ea2ff;
   --iui-shadow: 0 4px 20px rgb(0 0 0 / 35%);
   --iui-shadow-sm: 0 1px 3px rgb(0 0 0 / 30%);
-  --iui-info: #7cb8ff;
-  --iui-info-soft: #16273b;
+  --iui-info: #e4d3a8;
+  --iui-info-soft: #2b261b;
   --iui-success: #5bcf9c;
   --iui-success-soft: #13291f;
   --iui-warning: #f0b84f;
@@ -84,6 +90,16 @@
   --iui-purple-soft: #261f3a;
   --iui-pink: #f28cc0;
   --iui-pink-soft: #371b2a;
+  --iui-badge-success: #8fd3b2;
+  --iui-badge-success-soft: rgb(80 180 130 / 14%);
+  --iui-badge-warning: #e6c27c;
+  --iui-badge-warning-soft: rgb(220 170 80 / 14%);
+  --iui-badge-danger: #f0a39b;
+  --iui-badge-danger-soft: rgb(230 110 100 / 14%);
+  --iui-badge-purple: #c3b2f0;
+  --iui-badge-purple-soft: rgb(160 130 240 / 14%);
+  --iui-badge-pink: #eeaacb;
+  --iui-badge-pink-soft: rgb(230 130 180 / 14%);
   --iui-chart-1: #3d9dff;
   --iui-chart-2: #22bf91;
   --iui-chart-3: #a07cff;
@@ -92,6 +108,6 @@
   --iui-chart-6: #5fb3bd;
   --iui-map-water: #1d3540;
   --iui-ring: var(--iui-ink);
-  --iui-photo-empty: #26302f;
-  --iui-photo-empty-icon: #4a5a60;
+  --iui-photo-empty: var(--iui-surface);
+  --iui-photo-empty-icon: var(--iui-border-strong);
 }

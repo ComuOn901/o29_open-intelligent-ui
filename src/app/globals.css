@@ -62,3 +62,30 @@ body {
   margin: 0;
   height: 100%;
 }
+
+/* Default text takes the theme's Regular weight and tracking, like the
+   react-ui typography tokens; grayscale smoothing keeps macOS from
+   rendering text a shade heavier. */
+body {
+  font-weight: var(--openui-font-weight-regular);
+  font-variation-settings: var(--openui-font-variation-regular);
+  letter-spacing: var(--openui-letter-spacing-normal);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+b,
+strong {
+  font-variation-settings: var(--openui-font-variation-medium);
+}
+
+.chat-shell {
+  width: 100%;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+.welcome-mascot {
+  width: 112px;
+  height: auto;
+}
