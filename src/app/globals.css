@@ -89,3 +89,9 @@ strong {
   width: 112px;
   height: auto;
 }
+
+/* Eight starters: two rows of four cards instead of one squeezed row. */
+.chat-shell .openui-agent-conversation-starter--card {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
