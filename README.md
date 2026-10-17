@@ -177,3 +177,7 @@ npm run bench -- --answers <dir>        # re-check and re-shoot saved <id>.oui a
 
 Results go to `bench-out/<model>-<time>/`: `answers/`, `shots/`, `report.json` and `report.md`. Other options: `--only id,id`, `--kind tool|dashboard`, `--widths`, `--no-shots`, `--concurrency`, `--temperature`, `--max-tokens`, `--app`.
 
+
+## License
+
+[MIT](LICENSE)
